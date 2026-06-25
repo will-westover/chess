@@ -23,12 +23,12 @@ public class ChessPiece {
      * The various different chess piece options
      */
     public enum PieceType {
-        KING(false,Direction.ALL),
+        KING(false, Direction.ALL),
         QUEEN(true, Direction.ALL),
         BISHOP(true, Direction.DIAGONAL),
         KNIGHT(false, Direction.KNIGHT_MOVES),
         ROOK(true, Direction.STRAIGHT),
-        PAWN(false,Direction.STRAIGHT);
+        PAWN(false, Direction.PAWN_MOVES);
 
         public final boolean slider;
         public final Direction[] directions;
@@ -40,36 +40,40 @@ public class ChessPiece {
     }
 
     public enum Direction {
-        UP(1,0),
-        DOWN(-1,0),
-        LEFT(0,-1),
-        RIGHT(0,1),
-        UP_RIGHT(1,1),
-        UP_LEFT(1,-1),
-        DOWN_RIGHT(-1,1),
-        DOWN_LEFT(-1,-1),
-        KNIGHT_1(1,2),
-        KNIGHT_2(2,1),
-        KNIGHT_3(-1,2),
-        KNIGHT_4(-2,1),
+        UP(1, 0),
+        DOWN(-1, 0),
+        LEFT(0, -1),
+        RIGHT(0, 1),
+        UP_RIGHT(1, 1),
+        UP_LEFT(1, -1),
+        DOWN_RIGHT(-1, 1),
+        DOWN_LEFT(-1, -1),
+        KNIGHT_1(1, 2),
+        KNIGHT_2(2, 1),
+        KNIGHT_3(-1, 2),
+        KNIGHT_4(-2, 1),
         KNIGHT_5(-2, -1),
-        KNIGHT_6(-1,-2),
-        KNIGHT_7(1,-2),
-        KNIGHT_8(2,-1),
-        PAWN_DOUBLE_STEP(2,0);
+        KNIGHT_6(-1, -2),
+        KNIGHT_7(1, -2),
+        KNIGHT_8(2, -1),
+        PAWN_DOUBLE_STEP(2, 0);
 
 
         public final int rowDelta;
         public final int colDelta;
-        Direction(int rowDelta, int colDelta){this.rowDelta = rowDelta; this.colDelta = colDelta;}
 
-        public static final Direction[] STRAIGHT = {UP,DOWN,LEFT,RIGHT};
-        public static final Direction[] ALL = {UP,DOWN,LEFT,RIGHT, UP_LEFT,UP_RIGHT,DOWN_LEFT,DOWN_RIGHT};
+        Direction(int rowDelta, int colDelta) {
+            this.rowDelta = rowDelta;
+            this.colDelta = colDelta;
+        }
+
+        public static final Direction[] STRAIGHT = {UP, DOWN, LEFT, RIGHT};
+        public static final Direction[] ALL = {UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT};
         public static final Direction[] DIAGONAL = {UP_LEFT, UP_RIGHT, DOWN_RIGHT, DOWN_LEFT};
         public static final Direction[] KNIGHT_MOVES = {KNIGHT_1, KNIGHT_2, KNIGHT_3, KNIGHT_4, KNIGHT_5,
                 KNIGHT_6, KNIGHT_7, KNIGHT_8};
-        public static final Direction[] PAWN_MOVES = {UP,DOWN,LEFT,RIGHT, PAWN_DOUBLE_STEP,
-                UP_LEFT,UP_RIGHT,DOWN_LEFT,DOWN_RIGHT};
+        public static final Direction[] PAWN_MOVES = {UP, DOWN, LEFT, RIGHT, PAWN_DOUBLE_STEP,
+                UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT};
     }
 
     /**
@@ -98,32 +102,44 @@ public class ChessPiece {
         Collection<ChessMove> potentialMoves = new ArrayList<>();
         ChessPiece piece = board.getPiece(myPosition);
 
-        for (Direction d: piece.getPieceType().directions){
+        for (Direction d : piece.getPieceType().directions) {
             potentialMoves.addAll(availableMoves(board, myPosition, d));
         }
 
         return potentialMoves;
     }
 
-    private Collection<ChessMove> availableMoves (ChessBoard board, ChessPosition start, Direction direction){
+    private Collection<ChessMove> availableMoves(ChessBoard board, ChessPosition start, Direction direction) {
         Collection<ChessMove> potentialMoves = new ArrayList<>();
         Boolean slider = board.getPiece(start).getPieceType().slider;
         int row = start.getRow();
         int col = start.getColumn();
 
-        ChessPosition currentPosition = new ChessPosition(start.getColumn(), start.getRow());
-        while(true) {
-            if (
-                    currentPosition.getColumn() > 8 || currentPosition.getColumn() < 0 ||
-                            currentPosition.getRow() > 8 || currentPosition.getRow() < 0
-            )      {
-                //code for the main part.
+        while (true) {
+            row += direction.rowDelta;
+            col += direction.colDelta;
+
+            if (row > 8 || row <= 0 || col > 8 || col <= 0) {
+                break;
             }
-            else break;
+            //main part.
+            ChessPosition next = new ChessPosition(row, col);
+            ChessPiece available = board.getPiece(next);
+
+            if (available == null) {
+                potentialMoves.add(new ChessMove(start, next, null));
+                if(!slider){break;}
+            } else {
+                if (available.getTeamColor() != board.getPiece(start).getTeamColor()) {
+                    potentialMoves.add(new ChessMove(start, next, null));
+                }
+                break;
+            }
+
         }
-
-
-};
+        return potentialMoves;
+    }
+}
 
 
 
