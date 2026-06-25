@@ -96,10 +96,12 @@ public class ChessPiece {
                 && rightPosition.getColumn() <= 8 && rightPosition.getColumn() > 0
         ){
             if (board.getPiece(rightPosition) == null) {
-                potentialMoves.add(rightPosition);
+                potentialMoves.add(new ChessMove(myPosition,rightPosition,null));
+            }
+            if (board.getPiece(leftPosition) == null) {
+                potentialMoves.add(new ChessMove(myPosition,leftPosition,null));
             }
         }
-        if (leftPosition.)
         return potentialMoves;
     }
 }
