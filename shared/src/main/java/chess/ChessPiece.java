@@ -86,7 +86,6 @@ public class ChessPiece {
 
     private Collection<ChessMove> horizontalShort(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> potentialMoves = new ArrayList<>();
-        ChessPiece piece = board.getPiece(myPosition);
 
         ChessPosition rightPosition =  new ChessPosition(myPosition.getRow(),myPosition.getColumn() + 1);
         ChessPosition leftPosition =  new ChessPosition(myPosition.getRow(),myPosition.getColumn()-1);
@@ -98,10 +97,15 @@ public class ChessPiece {
             if (board.getPiece(rightPosition) == null) {
                 potentialMoves.add(new ChessMove(myPosition,rightPosition,null));
             }
+        }
+        if (
+                leftPosition.getRow() <= 8 && leftPosition.getRow() > 0
+                && leftPosition.getColumn() <= 8 && leftPosition.getColumn() > 0) {
             if (board.getPiece(leftPosition) == null) {
-                potentialMoves.add(new ChessMove(myPosition,leftPosition,null));
+                potentialMoves.add(new ChessMove(myPosition, leftPosition, null));
             }
         }
+
         return potentialMoves;
     }
 }
