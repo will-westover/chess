@@ -101,11 +101,13 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         Collection<ChessMove> potentialMoves = new ArrayList<>();
         ChessPiece piece = board.getPiece(myPosition);
-
-        for (Direction d : piece.getPieceType().directions) {
-            potentialMoves.addAll(availableMoves(board, myPosition, d));
+        if (piece.getPieceType() == PieceType.PAWN){
+            potentialMoves.addAll(pawnMoves(board,myPosition));
+        } else {
+            for (Direction d : piece.getPieceType().directions) {
+                potentialMoves.addAll(availableMoves(board, myPosition, d));
+            }
         }
-
         return potentialMoves;
     }
 
@@ -139,6 +141,48 @@ public class ChessPiece {
         }
         return potentialMoves;
     }
+    private Collection<ChessMove> pawnMoves (ChessBoard board, ChessPosition start) {
+        Collection<ChessMove> potentialMoves = new ArrayList<>();
+        ChessGame.TeamColor color = board.getPiece(start).getTeamColor();
+        int row = start.getRow();
+        int col = start.getColumn();
+
+        int forward = (color == ChessGame.TeamColor.WHITE) ? 1 : -1;
+        int startRow = (color == ChessGame.TeamColor.WHITE) ? 2 : 7;
+        int promoRow = (color == ChessGame.TeamColor.WHITE) ? 8 : 1;
+
+        // this is just for a basic one step
+        int r1 = row + forward;
+        if (r1 >= 1 && r1 <= 8) {
+            ChessPosition onePawnStep = new ChessPosition(r1, col);
+            if (board.getPiece(onePawnStep) == null) {
+                addPawnMove(potentialMoves, start, onePawnStep, promoRow);
+            }
+        }
+        // this would be for opening
+        int twoStep = row + 2* forward;
+        if (row == startRow){
+            ChessPosition doublePawnStep = new ChessPosition(twoStep, col);
+            if (board.getPiece(doublePawnStep) == null){
+                addPawnMove(potentialMoves, start, doublePawnStep, promoRow);
+            }
+        }
+        // this would be for the ability to capture
+
+        return potentialMoves;
+    }
+
+    private void addPawnMove(Collection<ChessMove> moves, ChessPosition start, ChessPosition end, int promoRow ){
+        if (end.getRow() == promoRow){
+            moves.add(new ChessMove(start, end, PieceType.QUEEN));
+            moves.add(new ChessMove(start, end, PieceType.KNIGHT));
+            moves.add(new ChessMove(start, end, PieceType.ROOK));
+            moves.add(new ChessMove(start, end, PieceType.BISHOP));
+        } else{
+            moves.add(new ChessMove(start, end, null));
+        }
+    }
+
 }
 
 
