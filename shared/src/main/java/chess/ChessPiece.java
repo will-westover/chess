@@ -152,22 +152,46 @@ public class ChessPiece {
         int promoRow = (color == ChessGame.TeamColor.WHITE) ? 8 : 1;
 
         // this is just for a basic one step
-        int r1 = row + forward;
-        if (r1 >= 1 && r1 <= 8) {
-            ChessPosition onePawnStep = new ChessPosition(r1, col);
+        int oneStepRow = row + forward;
+        if (oneStepRow >= 1 && oneStepRow <= 8) {
+            ChessPosition onePawnStep = new ChessPosition(oneStepRow, col);
             if (board.getPiece(onePawnStep) == null) {
                 addPawnMove(potentialMoves, start, onePawnStep, promoRow);
             }
         }
         // this would be for opening
-        int twoStep = row + 2* forward;
+        int twoStepRow = row + 2* forward;
         if (row == startRow){
-            ChessPosition doublePawnStep = new ChessPosition(twoStep, col);
-            if (board.getPiece(doublePawnStep) == null){
+            ChessPosition doublePawnStep = new ChessPosition(twoStepRow, col);
+            ChessPosition onePawnStep = new ChessPosition(oneStepRow, col);
+            if (board.getPiece(doublePawnStep) == null && board.getPiece(onePawnStep) == null){
                 addPawnMove(potentialMoves, start, doublePawnStep, promoRow);
             }
         }
         // this would be for the ability to capture
+        int diagonalCaptureRow = (row + forward);
+        int diagonalRightCaptureCol = (col +1);
+        int diagonalLeftCaptureCol = + (col - 1);
+
+        if (diagonalCaptureRow > 0 && diagonalCaptureRow <=8
+        && diagonalLeftCaptureCol > 0 && diagonalLeftCaptureCol <= 8)
+        {
+            ChessPosition leftDiagonalCapture = new ChessPosition(diagonalCaptureRow, diagonalLeftCaptureCol);
+            ChessPiece leftSquare = board.getPiece(leftDiagonalCapture);
+            if(leftSquare != null && leftSquare.getTeamColor() != color){
+                addPawnMove(potentialMoves, start, leftDiagonalCapture,promoRow);
+            }
+        }
+
+        if (diagonalCaptureRow > 0 && diagonalCaptureRow <=8
+                && diagonalRightCaptureCol > 0 && diagonalRightCaptureCol <= 8)
+        {
+            ChessPosition rightDiagonalCapture = new ChessPosition(diagonalCaptureRow, diagonalRightCaptureCol);
+            ChessPiece rightSquare = board.getPiece(rightDiagonalCapture);
+            if(rightSquare != null && rightSquare.getTeamColor() != color){
+                addPawnMove(potentialMoves, start, rightDiagonalCapture,promoRow);
+            }
+        }
 
         return potentialMoves;
     }
