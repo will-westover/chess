@@ -10,7 +10,6 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-
     ChessPiece [][] squares = new ChessPiece[8][8];
 
     @Override
@@ -57,22 +56,17 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        ChessPiece.PieceType[] backSide = {
-                ChessPiece.PieceType.ROOK,
-                ChessPiece.PieceType.KNIGHT,
-                ChessPiece.PieceType.BISHOP,
-                ChessPiece.PieceType.QUEEN,
-                ChessPiece.PieceType.KING,
-                ChessPiece.PieceType.BISHOP,
-                ChessPiece.PieceType.KNIGHT,
-                ChessPiece.PieceType.ROOK
+        ChessPiece.PieceType [] backRow = {
+                ChessPiece.PieceType.ROOK,ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP,ChessPiece.PieceType.QUEEN,
+                ChessPiece.PieceType.KING, ChessPiece.PieceType.BISHOP,
+                ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.ROOK,
         };
-        //this.addPiece(new ChessPosition(1,1),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK));
-        for (int col = 1; col <= 8; col++) {
-            this.addPiece(new ChessPosition(2,col),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
-            this.addPiece(new ChessPosition(7,col),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
-            this.addPiece(new ChessPosition(1, col), new ChessPiece(ChessGame.TeamColor.WHITE, backSide[col-1]));
-            this.addPiece(new ChessPosition(8, col), new ChessPiece(ChessGame.TeamColor.BLACK, backSide[col-1]));
-        };
+        for(int i=1;i<=8;i++){
+            addPiece(new ChessPosition(1,i),new ChessPiece(ChessGame.TeamColor.WHITE,backRow[i-1]));
+            addPiece(new ChessPosition(8,i),new ChessPiece(ChessGame.TeamColor.BLACK,backRow[i-1]));
+            addPiece(new ChessPosition(2,i),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+            addPiece(new ChessPosition(7,i),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+        }
     }
 }
