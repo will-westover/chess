@@ -46,7 +46,7 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+    public Collection<ChessMove> validMoves(ChessBoard board, ChessPosition startPosition) {
         Collection<ChessMove> validMoves = new ArrayList<>();
 
         //code for what determines what a valid move would be
@@ -55,7 +55,25 @@ public class ChessGame {
         //if one of the moves that we makes returns moves from the other team that could put our king in check
         //then we shouldn't allow the user to make that move and instead remove it from the vlaid moves list.
 
+
+
         return validMoves;
+    }
+    public Collection<ChessMove> allBoardMoves(ChessBoard board){
+        Collection<ChessMove> legalBoardMoves = new ArrayList<>();
+
+        for (int i = 1; i <= 8; i++){
+            for (int j = 1; j <= 8; j++){
+                ChessPosition currentPosition = new ChessPosition(i,j);
+                ChessPiece current = board.getPiece(currentPosition);
+
+                if(current != null){
+                    Collection<ChessMove> moves = current.pieceMoves(board,currentPosition);
+                    legalBoardMoves.addAll(moves);
+                }
+            }
+        }
+        return legalBoardMoves;
     }
 
     public ChessPosition kingLocation(ChessBoard board, TeamColor color){
