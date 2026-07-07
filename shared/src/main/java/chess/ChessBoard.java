@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -26,8 +28,10 @@ public class ChessBoard {
         return Arrays.deepHashCode(squares);
     }
 
-    public ChessBoard() {
-
+    public ChessBoard(ChessBoard copy) {
+        for (int i = 0 ; i < 8; i++){
+            squares[i] = copy.squares[i].clone();
+        }
     }
 
     /**

@@ -46,14 +46,34 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessBoard board, ChessPosition startPosition) {
+    public Collection<ChessMove> validMoves(ChessBoard board) {
         Collection<ChessMove> validMoves = new ArrayList<>();
+
+        Collection<ChessMove> allMoves = allBoardMoves(board);
+        int count = allMoves.size();
 
         //code for what determines what a valid move would be
         //we need to check if each move puts the our king in check or not.
         //we should get all of the moves from the other team if we move each peice to every possible legal play
         //if one of the moves that we makes returns moves from the other team that could put our king in check
         //then we shouldn't allow the user to make that move and instead remove it from the vlaid moves list.
+        for (ChessMove move : allMoves){
+            //for each of the moves we want to generate a new board and return all of the moves after that.
+            //Get origninal board
+            //Get first move and apply it
+            //return the moves of the other team
+            // if any of the moves of the other team have the position of the king, then remove the move we're evaluating
+            ChessBoard copy = new ChessBoard(board);
+            ChessPiece piece = copy.getPiece(move.getStartPosition());
+
+            if(move.getPromotionPiece() != null){
+                piece = new ChessPiece(piece.getTeamColor(),piece.getPieceType());
+            }
+            copy.addPiece(move.getEndPosition(), piece);
+            copy.addPiece(move.getStartPosition(), null);
+
+        }
+
 
 
 
@@ -76,7 +96,7 @@ public class ChessGame {
         return legalBoardMoves;
     }
 
-    public ChessPosition kingLocation(ChessBoard board, TeamColor color){
+    public ChessPosition kingLocation(ChessBoard board, ChessGame.TeamColor color){
         for (int i = 1; i <=8; i++){
             for (int j = 1; j<=8; j++){
                 ChessPosition evalPosition = new ChessPosition(i,j);
