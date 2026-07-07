@@ -27,6 +27,9 @@ public class ChessBoard {
     public int hashCode() {
         return Arrays.deepHashCode(squares);
     }
+    public ChessBoard(){
+
+    }
 
     public ChessBoard(ChessBoard copy) {
         for (int i = 0 ; i < 8; i++){

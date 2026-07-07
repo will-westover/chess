@@ -10,16 +10,20 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    private ChessBoard board;
+    private TeamColor turn;
 
     public ChessGame() {
-
+        this.board = new ChessBoard();
+        this.board.resetBoard();
+        this.turn = TeamColor.WHITE;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return turn;
     }
 
     /**
@@ -28,7 +32,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        this.turn = team;
     }
 
     /**
@@ -46,31 +50,39 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessBoard board) {
+
+    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        ChessPiece piece = getBoard().getPiece(startPosition);
+        if (piece == null) {return null;}
+
+        TeamColor color = piece.getTeamColor();
+        TeamColor enemy = (color == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+
         Collection<ChessMove> validMoves = new ArrayList<>();
+        Collection<ChessMove> allMoves = piece.pieceMoves(board, startPosition);
 
-        Collection<ChessMove> allMoves = allBoardMoves(board);
-        int count = allMoves.size();
-
-        //code for what determines what a valid move would be
-        //we need to check if each move puts the our king in check or not.
-        //we should get all of the moves from the other team if we move each peice to every possible legal play
-        //if one of the moves that we makes returns moves from the other team that could put our king in check
-        //then we shouldn't allow the user to make that move and instead remove it from the vlaid moves list.
         for (ChessMove move : allMoves){
-            //for each of the moves we want to generate a new board and return all of the moves after that.
-            //Get origninal board
-            //Get first move and apply it
-            //return the moves of the other team
-            // if any of the moves of the other team have the position of the king, then remove the move we're evaluating
             ChessBoard copy = new ChessBoard(board);
-            ChessPiece piece = copy.getPiece(move.getStartPosition());
+            ChessPiece moving = copy.getPiece(move.getStartPosition());
 
             if(move.getPromotionPiece() != null){
-                piece = new ChessPiece(piece.getTeamColor(),piece.getPieceType());
+                moving = new ChessPiece(moving.getTeamColor(),move.getPromotionPiece());
             }
-            copy.addPiece(move.getEndPosition(), piece);
+            copy.addPiece(move.getEndPosition(), moving);
             copy.addPiece(move.getStartPosition(), null);
+
+            Collection<ChessMove> copyMoves = allBoardMoves(copy, enemy);
+            ChessPosition kingPosition = kingLocation(copy,color);
+            boolean kingCaptured = false;
+            for (ChessMove capture: copyMoves){
+                if(capture.getEndPosition().equals(kingPosition)){
+                    kingCaptured = true;
+                    break;
+                }
+            }
+            if(!kingCaptured){
+                validMoves.add(move);
+            }
 
         }
 
@@ -79,7 +91,7 @@ public class ChessGame {
 
         return validMoves;
     }
-    public Collection<ChessMove> allBoardMoves(ChessBoard board){
+    public Collection<ChessMove> allBoardMoves(ChessBoard board, TeamColor color){
         Collection<ChessMove> legalBoardMoves = new ArrayList<>();
 
         for (int i = 1; i <= 8; i++){
@@ -88,8 +100,10 @@ public class ChessGame {
                 ChessPiece current = board.getPiece(currentPosition);
 
                 if(current != null){
-                    Collection<ChessMove> moves = current.pieceMoves(board,currentPosition);
-                    legalBoardMoves.addAll(moves);
+                    if (current.getTeamColor() == color) {
+                        Collection<ChessMove> moves = current.pieceMoves(board, currentPosition);
+                        legalBoardMoves.addAll(moves);
+                    }
                 }
             }
         }
@@ -158,7 +172,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -167,6 +181,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return board;
     }
 }
