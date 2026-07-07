@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -46,7 +47,30 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        Collection<ChessMove> validMoves = new ArrayList<>();
+
+        //code for what determines what a valid move would be
+        //we need to check if each move puts the our king in check or not.
+        //we should get all of the moves from the other team if we move each peice to every possible legal play
+        //if one of the moves that we makes returns moves from the other team that could put our king in check
+        //then we shouldn't allow the user to make that move and instead remove it from the vlaid moves list.
+
+        return validMoves;
+    }
+
+    public ChessPosition kingLocation(ChessBoard board, TeamColor color){
+        for (int i = 1; i <=8; i++){
+            for (int j = 1; j<=8; j++){
+                ChessPosition evalPosition = new ChessPosition(i,j);
+                ChessPiece evalPiece= board.getPiece(evalPosition);
+
+                if(evalPiece != null && evalPiece.getPieceType() == ChessPiece.PieceType.KING
+                        && evalPiece.getTeamColor() == color){
+                    return new ChessPosition(i, j);
+                }
+            }
+        }
+        return null;
     }
 
     /**
