@@ -85,12 +85,10 @@ public class ChessGame {
             }
 
         }
-
-
-
-
         return validMoves;
     }
+
+
     public Collection<ChessMove> allBoardMoves(ChessBoard board, TeamColor color){
         Collection<ChessMove> legalBoardMoves = new ArrayList<>();
 
@@ -159,7 +157,18 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //return whether the current set up of the board is in check or not
+        //if the current moves of the other team are the location of your king then youre semi-cooked
+        ChessPosition king = kingLocation(board, teamColor);
+        TeamColor enemy = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+        //we want the end position of each move
+        for (ChessMove move: allBoardMoves(board,enemy)){
+            if(move.getEndPosition().equals(king)){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -169,7 +178,11 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //get all of the moves that the king could make
+        //itterate through all of the moves that the other team could make
+        //store those moves
+        //if all of the moves a king could make are in that list AND its in check, then he cooked
+        return true;
     }
 
     /**
