@@ -2,6 +2,8 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -157,11 +159,10 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        //return whether the current set up of the board is in check or not
-        //if the current moves of the other team are the location of your king then youre semi-cooked
+
         ChessPosition king = kingLocation(board, teamColor);
         TeamColor enemy = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
-        //we want the end position of each move
+
         for (ChessMove move: allBoardMoves(board,enemy)){
             if(move.getEndPosition().equals(king)){
                 return true;
@@ -178,10 +179,28 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        //get all of the moves that the king could make
-        //itterate through all of the moves that the other team could make
-        //store those moves
-        //if all of the moves a king could make are in that list AND its in check, then he cooked
+
+        ChessPosition king = kingLocation(board, teamColor);
+        TeamColor enemy = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+
+        if(!isInCheck(teamColor)){
+            return false;
+        }
+        return noValidMoves(teamColor);
+    }
+
+    public boolean noValidMoves(TeamColor color){
+        //if we go through every single piece on our team and it has no valid moves we never return false
+        //this means that we have to return true
+        for(int i = 1; i <=8; i++){
+            for (int j = 1; j<=8; j++){
+                ChessPosition position = new ChessPosition(i,j);
+                ChessPiece piece = board.getPiece(position);
+                if(piece != null && piece.getTeamColor() == color && !validMoves(position).isEmpty()){
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
