@@ -179,10 +179,6 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-
-        ChessPosition king = kingLocation(board, teamColor);
-        TeamColor enemy = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
-
         if(!isInCheck(teamColor)){
             return false;
         }
@@ -212,7 +208,12 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        //stale mate is where the other player has blocked off every spot that your king can go and its your turn
+        ChessPosition kingLocation = kingLocation(board,teamColor);
+        if(noValidMoves(teamColor) && teamColor.equals(turn) && !isInCheck(teamColor)){
+            return true;
+        };
+        return false;
     }
 
     /**
