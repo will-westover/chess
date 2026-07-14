@@ -1,7 +1,9 @@
 package dataaccess;
 
 import model.UserData;
-import java.util.Collection;
 
-public class UserDAO {
+public interface UserDAO {
+    void createUser(UserData data) throws DataAccessException;
+    UserData getUser(String Username) throws DataAccessException;
+    void clear() throws DataAccessException;
 }
