@@ -3,5 +3,10 @@ package dataaccess;
 import model.AuthData;
 import java.util.Collection;
 
-public class AuthDAO {
+public interface AuthDAO {
+    void createAuthToken(AuthData authData) throws DataAccessException;
+    AuthData getAuth(String authToken)throws DataAccessException;
+    void deleteAuth(String authToken) throws DataAccessException;
+    void clear()throws DataAccessException;
+
 }
