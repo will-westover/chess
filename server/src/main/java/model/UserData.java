@@ -1,3 +1,3 @@
 package model;
 
-public record UserData (string userName, string email, string password){};
+public record UserData (String userName, String email, String password){};

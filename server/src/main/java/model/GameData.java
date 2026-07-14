@@ -1,4 +1,4 @@
 package model;
 import chess.ChessGame;
 
-public record GameData (string GameID, Chess Game Game ){};
+public record GameData (int GameID,String whiteUserName, String blackUserName, String gameName, ChessGame game ){};
