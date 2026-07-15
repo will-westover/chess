@@ -9,8 +9,6 @@ import model.UserData;
 import java.util.UUID;
 
 public class LoginService {
-    //in order to login we need to check if the suer exists
-    // then we need to create an auth token and return it
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
     public LoginService(UserDAO userDAO, AuthDAO authDAO){
