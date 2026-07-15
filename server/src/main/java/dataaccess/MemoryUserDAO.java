@@ -6,12 +6,20 @@ import java.util.HashMap;
 
 public class MemoryUserDAO implements UserDAO{
         final private HashMap<String, UserData> users = new HashMap<>();
-        private int nextId =1;
-        UserData createUser(UserData data){
-            users.put(data.userName(),data);
-        };
-        String getUsername(UserData data){
-            return data.
-        }
 
+    public void createUser(UserData data) {
+            users.put(data.userName(),data);
+    }
+
+    @Override
+    public UserData getUser(String username) throws DataAccessException {
+            if(users.get(username) != null){
+                return users.get(username);
+            } else {
+                return null;
+            }
+    }
+    public void clear(){
+            users.clear();
+    }
 }
