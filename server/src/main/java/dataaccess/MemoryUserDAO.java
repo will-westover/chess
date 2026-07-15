@@ -8,16 +8,11 @@ public class MemoryUserDAO implements UserDAO{
         final private HashMap<String, UserData> users = new HashMap<>();
 
     public void createUser(UserData data) {
-            users.put(data.userName(),data);
+            users.put(data.username(),data);
     }
 
-    @Override
     public UserData getUser(String username) throws DataAccessException {
-            if(users.get(username) != null){
                 return users.get(username);
-            } else {
-                return null;
-            }
     }
     public void clear(){
             users.clear();
