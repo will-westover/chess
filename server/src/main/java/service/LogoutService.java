@@ -12,11 +12,7 @@ public class LogoutService {
     }
 
     public void logoutClient(String authToken) throws ServiceException, DataAccessException {
-        AuthData response = authDAO.getAuth(authToken);
-
-        if (response == null) {
-            throw new ServiceException(401, "Error: unauthorized");
-        }
+        AuthValidtion.validate(authDAO, authToken);
         authDAO.deleteAuth(authToken);
 
     }
