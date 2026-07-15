@@ -30,9 +30,6 @@ public class RegisterService {
         AuthData auth = new AuthData(authtoken, user.username());
         authDAO.createAuth(auth);
         return auth;
-        //we need to register the user thats passed in. He has a username, password, and authtoken
-        // ok so we would have to get from the DAO if they already exist
-        //if they don't then we should make another memory user and add it to the hashmap or soemthing?
 
     }
 
