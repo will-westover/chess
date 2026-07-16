@@ -11,7 +11,6 @@ public class AuthValidtion {
         if(auth == null){
             throw new ServiceException(401, "Error: unauthorized");
         }
-
         return auth;
     }
 }
