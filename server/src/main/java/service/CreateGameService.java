@@ -1,9 +1,9 @@
 package service;
 
 import chess.ChessGame;
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 
@@ -17,12 +17,12 @@ public class CreateGameService {
     }
 
     public int createGame(String authToken, String gameName) throws ServiceException, DataAccessException {
-        AuthData auth = AuthValidtion.validate(authDAO, authToken);
+        AuthData auth = AuthValidation.validate(authDAO, authToken);
         if(gameName == null){
             throw new ServiceException(400, "Error: bad request");
         }
-        int game = gameDAO.createGame(new GameData(0,
+        int gameID = gameDAO.createGame(new GameData(0,
                 null, null, gameName, new ChessGame()));
-        return game;
+        return gameID;
     }
 }

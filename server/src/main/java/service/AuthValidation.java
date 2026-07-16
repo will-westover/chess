@@ -1,10 +1,10 @@
 package service;
 
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 import model.AuthData;
 
-public class AuthValidtion {
+public class AuthValidation {
     public static AuthData validate(AuthDAO authDAO, String authToken) throws ServiceException, DataAccessException {
         AuthData auth = authDAO.getAuth(authToken);
         if(auth == null){

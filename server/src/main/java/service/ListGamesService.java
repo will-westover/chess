@@ -1,8 +1,8 @@
 package service;
 
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 
@@ -18,7 +18,7 @@ public class ListGamesService {
     }
 
     public Collection<GameData> listGames(String authToken) throws ServiceException, DataAccessException {
-        AuthData auth = AuthValidtion.validate(authDAO, authToken);
+        AuthData auth = AuthValidation.validate(authDAO, authToken);
 
         return gameDAO.listGames();
     }

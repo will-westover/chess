@@ -1,3 +1,4 @@
 package server;
 
-public record ErrorResult(String message){};
+public record ErrorResult(String message) {
+}

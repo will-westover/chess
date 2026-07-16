@@ -1,7 +1,7 @@
 package service;
 
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
 
 
 public class LogoutService {
@@ -11,7 +11,7 @@ public class LogoutService {
     }
 
     public void logoutClient(String authToken) throws ServiceException, DataAccessException {
-        AuthValidtion.validate(authDAO, authToken);
+        AuthValidation.validate(authDAO, authToken);
         authDAO.deleteAuth(authToken);
 
     }

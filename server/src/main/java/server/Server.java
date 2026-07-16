@@ -1,12 +1,14 @@
 package server;
 
 import com.google.gson.Gson;
-import dataAccess.*;
-import io.javalin.*;
+import dataaccess.MemoryAuthDAO;
+import dataaccess.MemoryGameDAO;
+import dataaccess.MemoryUserDAO;
+import io.javalin.Javalin;
+import io.javalin.http.Context;
 import model.AuthData;
 import model.UserData;
 import service.*;
-import io.javalin.http.*;
 
 
 public class Server {
@@ -37,18 +39,20 @@ public class Server {
 
 
         javalin.delete("/db", ctx -> clearHandler(ctx));
-        javalin.post("/user", ctx-> registerHandler(ctx));
-        javalin.post("/session", ctx-> loginHandler(ctx));
+        javalin.post("/user", ctx -> registerHandler(ctx));
+        javalin.post("/session", ctx -> loginHandler(ctx));
         javalin.delete("/session", ctx -> logoutHandler(ctx));
         javalin.get("/game", ctx -> listHandler(ctx));
-        javalin.post("/game", ctx-> createHandler(ctx));
+        javalin.post("/game", ctx -> createHandler(ctx));
         javalin.put("/game", ctx -> joinHandler(ctx));
-        javalin.exception(ServiceException.class, (exception, ctx) ->{
+        javalin.exception(ServiceException.class, (exception, ctx) -> {
             ctx.status(exception.getStatus());
-            ctx.result(gson.toJson(new ErrorResult(exception.getMessage())));});
-        javalin.exception(Exception.class,((exception, ctx) -> {
+            ctx.result(gson.toJson(new ErrorResult(exception.getMessage())));
+        });
+        javalin.exception(Exception.class, ((exception, ctx) -> {
             ctx.status(500);
-            ctx.result(gson.toJson(new ErrorResult("Error: " + exception.getMessage())));}));
+            ctx.result(gson.toJson(new ErrorResult("Error: " + exception.getMessage())));
+        }));
 
 
     }
@@ -57,7 +61,8 @@ public class Server {
         clearService.clear();
         ctx.result("{}");
     }
-    private void registerHandler(Context ctx) throws Exception{
+
+    private void registerHandler(Context ctx) throws Exception {
         UserData user = gson.fromJson(ctx.body(), UserData.class);
         AuthData auth = registerService.registerClient(user);
         ctx.result(gson.toJson(auth));
@@ -93,7 +98,7 @@ public class Server {
     private void joinHandler(Context ctx) throws Exception {
         String token = ctx.header("authorization");
         JoinRequest request = gson.fromJson(ctx.body(), JoinRequest.class);
-        joinGameService.joinGame(token,request.playerColor(),request.gameID());
+        joinGameService.joinGame(token, request.playerColor(), request.gameID());
         ctx.result("{}");
     }
 

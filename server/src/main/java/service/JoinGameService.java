@@ -1,8 +1,8 @@
 package service;
 
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
+import dataaccess.AuthDAO;
+import dataaccess.DataAccessException;
+import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 
@@ -18,7 +18,7 @@ public class JoinGameService {
     public void joinGame(String authToken, String playerColor, int gameId)
             throws ServiceException, DataAccessException {
 
-        AuthData auth = AuthValidtion.validate(authDAO, authToken);
+        AuthData auth = AuthValidation.validate(authDAO, authToken);
         GameData game = gameDAO.getGame(gameId);
         if(playerColor == null){
             throw new ServiceException(400, "Error: bad request");
