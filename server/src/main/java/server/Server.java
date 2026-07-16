@@ -65,7 +65,7 @@ public class Server {
 
     private void loginHandler(Context ctx) throws Exception {
         UserData user = gson.fromJson(ctx.body(), UserData.class);
-        AuthData auth = registerService.registerClient(user);
+        AuthData auth = loginService.loginClient(user);
         ctx.result(gson.toJson(auth));
     }
 
@@ -86,6 +86,8 @@ public class Server {
         String token = ctx.header("authorization");
         CreateRequest request = gson.fromJson(ctx.body(), CreateRequest.class);
         int id = createGameService.createGame(token, request.gameName());
+        CreateResult result = new CreateResult(id);
+        ctx.result(gson.toJson(result));
     }
 
     private void joinHandler(Context ctx) throws Exception {
