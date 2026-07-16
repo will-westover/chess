@@ -55,7 +55,7 @@ public class ServiceTests {
     @Test
     void loginSuccess() throws Exception{
         registerService.registerClient(new UserData("username", "password:)", "shanereese@byu.edu"));
-        AuthData auth = loginService.loginClient(new UserData("username", "password:)", null));
+        AuthData auth = loginService.loginClient(new UserData("username", null, "shanereese@byu.edu"));
         assertNotNull(auth.authToken());
     }
     @Test
