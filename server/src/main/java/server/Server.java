@@ -53,15 +53,48 @@ public class Server {
 
     }
 
-    private void clearHandler(Context ctx) throws DataAccessException {
+    private void clearHandler(Context ctx) throws Exception {
         clearService.clear();
         ctx.result("{}");
     }
-    private void registerHandler(Context ctx) throws DataAccessException{
+    private void registerHandler(Context ctx) throws Exception{
         UserData user = gson.fromJson(ctx.body(), UserData.class);
         AuthData auth = registerService.registerClient(user);
         ctx.result(gson.toJson(auth));
     }
+
+    private void loginHandler(Context ctx) throws Exception {
+        UserData user = gson.fromJson(ctx.body(), UserData.class);
+        AuthData auth = registerService.registerClient(user);
+        ctx.result(gson.toJson(auth));
+    }
+
+    private void logoutHandler(Context ctx) throws Exception {
+        String token = ctx.header("authorization");
+        logoutService.logoutClient(token);
+        ctx.result("{}");
+    }
+
+    private void listHandler(Context ctx) throws Exception {
+        String token = ctx.header("authorization");
+        var games = listGamesService.listGames(token);
+        ListResult result = new ListResult(games);
+        ctx.result(gson.toJson(result));
+    }
+
+    private void createHandler(Context ctx) throws Exception {
+        String token = ctx.header("authorization");
+        CreateRequest request = gson.fromJson(ctx.body(), CreateRequest.class);
+        int id = createGameService.createGame(token, request.gameName());
+    }
+
+    private void joinHandler(Context ctx) throws Exception {
+        String token = ctx.header("authorization");
+        JoinRequest request = gson.fromJson(ctx.body(), JoinRequest.class);
+        joinGameService.joinGame(token,request.playerColor(),request.gameID());
+        ctx.result("{}");
+    }
+
 
     public int run(int desiredPort) {
         javalin.start(desiredPort);
