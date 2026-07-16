@@ -62,7 +62,7 @@ public record ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType ty
         for(int d[]: dir){
             int row = from.getRow()+d[0];
             int col = from.getColumn()+d[1];
-            if(!inBound(row,col)) continue;
+            if(!inBound(row,col)) {continue;}
 
             ChessPosition to = new ChessPosition(row,col);
             ChessPiece target = board.getPiece(to);
@@ -79,7 +79,7 @@ public record ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType ty
             while(true){
                 row += d[0];
                 col += d[1];
-                if(!inBound(row,col)) break;
+                if(!inBound(row,col)){break;}
 
                 ChessPosition to = new ChessPosition(row,col);
                 ChessPiece target = board.getPiece(to);
@@ -121,7 +121,7 @@ public record ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType ty
         for(int dc: new int[]{-1,1}) {
             int newRow = row + dir;
             int newCol = col + dc;
-            if(!inBound(newRow,newCol)) continue;
+            if(!inBound(newRow,newCol)) {continue;}
 
             ChessPosition diag = new ChessPosition(newRow,newCol);
             ChessPiece target = board.getPiece(diag);
