@@ -20,6 +20,9 @@ public class JoinGameService {
 
         AuthData auth = AuthValidtion.validate(authDAO, authToken);
         GameData game = gameDAO.getGame(gameId);
+        if(playerColor == null){
+            throw new ServiceException(400, "Error: bad request");
+        }
 
         if(game == null){
             throw new ServiceException(400, "Error: bad request");
