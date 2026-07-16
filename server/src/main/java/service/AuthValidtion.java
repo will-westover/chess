@@ -1,8 +1,7 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.DataAccessException;
-import dataaccess.UserDAO;
+import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
 import model.AuthData;
 
 public class AuthValidtion {
