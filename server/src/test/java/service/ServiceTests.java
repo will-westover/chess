@@ -6,7 +6,6 @@ import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ServiceTests {
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(ServiceTests.class);
     private MemoryUserDAO userDAO;
     private MemoryAuthDAO authDAO;
     private MemoryGameDAO gameDAO;
@@ -18,9 +17,6 @@ public class ServiceTests {
     private CreateGameService createGameService;
     private JoinGameService joinGameService;
 
-    private AuthData registerUser() throws Exception{
-        return registerService.registerClient(new UserData("username","password:)", "shanereese@byu.edu"));
-    }
 
     @BeforeEach
     void setUp(){
