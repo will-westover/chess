@@ -11,7 +11,8 @@ import java.util.UUID;
 public class LoginService {
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
-    public LoginService(UserDAO userDAO, AuthDAO authDAO){
+
+    public LoginService(UserDAO userDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
     }
@@ -30,5 +31,5 @@ public class LoginService {
         AuthData auth = new AuthData(authtoken, user.username());
         authDAO.createAuth(auth);
         return auth;
-        }
+    }
 }

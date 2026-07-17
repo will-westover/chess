@@ -11,14 +11,14 @@ public class CreateGameService {
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
 
-    public CreateGameService(AuthDAO authDAO, GameDAO gameDAO){
+    public CreateGameService(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
     }
 
     public int createGame(String authToken, String gameName) throws ServiceException, DataAccessException {
         AuthData auth = AuthValidation.validate(authDAO, authToken);
-        if(gameName == null){
+        if (gameName == null) {
             throw new ServiceException(400, "Error: bad request");
         }
         int gameID = gameDAO.createGame(new GameData(0,

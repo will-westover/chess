@@ -12,7 +12,7 @@ public class ListGamesService {
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
 
-    public ListGamesService(AuthDAO authDAO, GameDAO gameDAO){
+    public ListGamesService(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
         this.gameDAO = gameDAO;
     }

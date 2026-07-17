@@ -3,6 +3,7 @@ package service;
 import dataaccess.*;
 import model.*;
 import org.junit.jupiter.api.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ServiceTests {
@@ -19,7 +20,7 @@ public class ServiceTests {
 
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         userDAO = new MemoryUserDAO();
         authDAO = new MemoryAuthDAO();
         gameDAO = new MemoryGameDAO();
@@ -34,78 +35,89 @@ public class ServiceTests {
     }
 
     @Test
-    void registerSuccess() throws Exception{
+    void registerSuccess() throws Exception {
         UserData user = new UserData("username", "password:)", "shanereese@byu.edu");
         AuthData auth = registerService.registerClient(user);
         assertNotNull(auth.authToken());
     }
+
     @Test
-    void registerDuplicate() throws Exception{
+    void registerDuplicate() throws Exception {
         UserData user = new UserData("username", "password:)", "shanereese@byu.edu");
         registerService.registerClient(user);
         assertThrows(ServiceException.class, () -> registerService.registerClient(user));
     }
+
     @Test
-    void clearSuccess() throws Exception{
+    void clearSuccess() throws Exception {
         UserData user = new UserData("username", "password:)", "shanereese@byu.edu");
         registerService.registerClient(user);
         clearService.clear();
         assertNull(userDAO.getUser("username"));
     }
+
     @Test
-    void loginSuccess() throws Exception{
+    void loginSuccess() throws Exception {
         registerService.registerClient(new UserData("username", "password:)", "shanereese@byu.edu"));
         AuthData auth = loginService.loginClient(new UserData("username", null, "shanereese@byu.edu"));
         assertNotNull(auth.authToken());
     }
+
     @Test
-    void loginBadPassword() throws Exception{
+    void loginBadPassword() throws Exception {
         registerService.registerClient(new UserData("username", "password:)", "shanereese@byu.edu"));
         assertThrows(ServiceException.class, () -> loginService.loginClient(new UserData("username", "WRONG", null)));
     }
+
     @Test
-    void logOutSuccess() throws Exception{
+    void logOutSuccess() throws Exception {
         AuthData auth = registerService.registerClient(new UserData("username", "password:)", "shanereese@byu.edu"));
         logoutService.logoutClient(auth.authToken());
         assertNull(authDAO.getAuth(auth.authToken()));
     }
+
     @Test
-    void logBadToken() throws Exception{
+    void logBadToken() throws Exception {
         assertThrows(ServiceException.class, () -> logoutService.logoutClient("badToken"));
     }
 
     @Test
-    void listSuccess() throws Exception{
+    void listSuccess() throws Exception {
         AuthData auth = registerService.registerClient(new UserData("username", "password:)", "shanereese@byu.edu"));
         createGameService.createGame(auth.authToken(), "game");
         var games = listGamesService.listGames(auth.authToken());
-        assertEquals(1,games.size());
+        assertEquals(1, games.size());
     }
+
     @Test
-    void listBadToken() throws Exception{
+    void listBadToken() throws Exception {
         assertThrows(ServiceException.class, () -> listGamesService.listGames("badToken"));
     }
+
     @Test
-    void createSuccess() throws Exception{
+    void createSuccess() throws Exception {
         AuthData auth = registerService.registerClient(new UserData("username", "password:)", "shanereese@byu.edu"));
-        int id = createGameService.createGame(auth.authToken(),"game");
-        assertTrue(id>0);
+        int id = createGameService.createGame(auth.authToken(), "game");
+        assertTrue(id > 0);
     }
+
     @Test
-    void createBadToken() throws Exception{
-        assertThrows(ServiceException.class, () -> createGameService.createGame("badToken","game1"));
+    void createBadToken() throws Exception {
+        assertThrows(ServiceException.class, () -> createGameService.createGame("badToken", "game1"));
     }
+
     @Test
-    void joinSuccess() throws Exception{
+    void joinSuccess() throws Exception {
         AuthData auth = registerService.registerClient(new UserData("username", "password:)", "shanereese@byu.edu"));
-        int id = createGameService.createGame(auth.authToken(),"game");
-        joinGameService.joinGame(auth.authToken(),"WHITE",id);
+        int id = createGameService.createGame(auth.authToken(), "game");
+        joinGameService.joinGame(auth.authToken(), "WHITE", id);
         assertEquals("username", gameDAO.getGame(id).whiteUsername());
     }
+
     @Test
-    void joinBadColor() throws Exception{
+    void joinBadColor() throws Exception {
         AuthData auth = registerService.registerClient(new UserData("username", "password:)", "shanereese@byu.edu"));
-        int id = createGameService.createGame(auth.authToken(),"game");
-        assertThrows(ServiceException.class, () -> joinGameService.joinGame(auth.authToken(),null,id));
+        int id = createGameService.createGame(auth.authToken(), "game");
+        assertThrows(ServiceException.class, () -> joinGameService.joinGame(auth.authToken(), null, id));
     }
 }

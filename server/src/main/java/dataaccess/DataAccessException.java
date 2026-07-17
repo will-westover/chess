@@ -1,10 +1,11 @@
 package dataaccess;
 
-public class DataAccessException extends Exception{
-    public DataAccessException(String message){
+public class DataAccessException extends Exception {
+    public DataAccessException(String message) {
         super(message);
     }
-    public DataAccessException(String message, Throwable exception){
+
+    public DataAccessException(String message, Throwable exception) {
         super(message, exception);
     }
 }

@@ -12,17 +12,17 @@ public class RegisterService {
     private final UserDAO userDAO;
     private final AuthDAO authDAO;
 
-    public RegisterService(UserDAO userDAO, AuthDAO authDAO){
+    public RegisterService(UserDAO userDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
 
     }
 
     public AuthData registerClient(UserData user) throws ServiceException, DataAccessException {
-        if(user.username() == null || user.password() == null || user.email() == null){
+        if (user.username() == null || user.password() == null || user.email() == null) {
             throw new ServiceException(400, "Error: bad request");
         }
-        if(userDAO.getUser(user.username()) != null) {
+        if (userDAO.getUser(user.username()) != null) {
             throw new ServiceException(403, "Error: already taken");
         }
         userDAO.createUser(user);
