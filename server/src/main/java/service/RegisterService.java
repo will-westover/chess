@@ -5,6 +5,7 @@ import dataaccess.DataAccessException;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.UUID;
 
@@ -25,7 +26,10 @@ public class RegisterService {
         if (userDAO.getUser(user.username()) != null) {
             throw new ServiceException(403, "Error: already taken");
         }
-        userDAO.createUser(user);
+
+        var hased = BCrypt.hashpw(user.password(),BCrypt.gensalt());
+        var hashedUser = new UserData(user.username(),user.email(), hased);
+        userDAO.createUser(hashedUser);
         String authtoken = UUID.randomUUID().toString();
         AuthData auth = new AuthData(authtoken, user.username());
         authDAO.createAuth(auth);

@@ -1,6 +1,5 @@
 package dataaccess;
 
-import model.AuthData;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -14,8 +13,7 @@ public class MySQLUserDAO implements UserDAO{
             try (var prepareStatement = conn.prepareStatement(sql)) {
                 prepareStatement.setString(1, data.username());
                 prepareStatement.setString(2, data.email());
-                var hashedPassword = BCrypt.hashpw(data.password(), BCrypt.gensalt());
-                prepareStatement.setString(3, hashedPassword);
+                prepareStatement.setString(3, data.password());
                 prepareStatement.executeUpdate();
             }
 
@@ -39,9 +37,8 @@ public class MySQLUserDAO implements UserDAO{
                     return null;
                 }
             }
-
         } catch (SQLException exception) {
-            throw new DataAccessException("Error: failed to get authentication", exception);
+            throw new DataAccessException("Error: failed to get user", exception);
         }
     }
 
