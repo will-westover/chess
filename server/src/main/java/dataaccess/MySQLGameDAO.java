@@ -93,6 +93,7 @@ public class MySQLGameDAO implements GameDAO{
                 preparedStatement.setString(3, gameData.gameName());
                 var json = new Gson().toJson(gameData.game());
                 preparedStatement.setString(4, json);
+                preparedStatement.setInt(5, gameData.gameID());
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException ex) {
