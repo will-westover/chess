@@ -6,13 +6,14 @@ import java.sql.SQLException;
 
 public class MySQLAuthDAO implements AuthDAO{
 
-    void createAuth(AuthData authData) throws DataAccessException {
+    public void createAuth(AuthData authData) throws DataAccessException {
         var sql = "INSERT INTO auth (authToken, username) VALUES (?,?)";
 
         try (var conn = DatabaseManager.getConnection()) {
             try(var prepareStatement = conn.prepareStatement(sql)){
                 prepareStatement.setString(1, authData.authToken());
                 prepareStatement.setString(2, authData.username());
+                prepareStatement.executeUpdate();
             }
 
         } catch (SQLException exception) {
@@ -20,15 +21,31 @@ public class MySQLAuthDAO implements AuthDAO{
         }
     }
 
-    AuthData getAuth(String authToken) throws DataAccessException{
+    public AuthData getAuth(String authToken) throws DataAccessException{
+        var sql = "SELECT authToken, username FROM auth WHERE authToken = ?";
+
+        try (var conn = DatabaseManager.getConnection()) {
+            try(var prepareStatement = conn.prepareStatement(sql)){
+                prepareStatement.setString(1, authToken);
+                try(var result = prepareStatement.executeQuery()){
+                    if (result.next()){
+                        return new AuthData(result.getString("authToken"),
+                                            result.getString("username"));
+                    }
+                    return null;
+                }
+            }
+
+        } catch (SQLException exception) {
+            throw new DataAccessException("Error: failed to get authentication", exception);
+        }
+    }
+
+    public void deleteAuth(String authToken) throws DataAccessException{
 
     }
 
-    void deleteAuth(String authToken) throws DataAccessException{
-
-    }
-
-    void clear() throws DataAccessException{
+    public void clear() throws DataAccessException{
 
     }
 }
