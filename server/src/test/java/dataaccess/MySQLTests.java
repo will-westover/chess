@@ -7,6 +7,7 @@ public class MySQLTests {
 
     @Test
     void verifyConnection() throws Exception{
+        DatabaseManager.createDatabase();
 
     }
 }
