@@ -40,6 +40,24 @@ public class DatabaseManager {
         password VARCHAR(255) NOT NULL,
         email VARCHAR(255) NOT NULL,
         PRIMARY KEY (username))
+        """,
+
+        """
+        CREATE TABLE IF NOT EXISTS auth(
+        authToken VARCHAR(255) NOT NULL,
+        username VARCHAR(255) NOT NULL,
+        PRIMARY KEY (authToken),
+        INDEX(username))
+        """,
+
+        """
+        CREATE TABLE IF NOT EXISTS game(
+        gameID INT NOT NULL AUTO_INCREMENT,
+        gameName VARCHAR(255) NOT NULL,
+        game TEXT NOT NULL,
+        whiteUsername VARCHAR(255),
+        blackUsername VARCHAR(255),
+        PRIMARY KEY (gameID))
         """
     };
 
