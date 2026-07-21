@@ -29,6 +29,21 @@ public class DatabaseManager {
         }
     }
 
+    static public void createTable() {
+
+    }
+
+    private static final String[] CREATE_STATEMENTS = {
+        """
+        CREATE TABLE IF NOT EXISTS user (
+        username VARCHAR(255) NOT NULL, 
+        password VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        PRIMARY KEY (username))
+        """
+    };
+
+
     /**
      * Create a connection to the database and sets the catalog based upon the
      * properties specified in db.properties. Connections to the database should
