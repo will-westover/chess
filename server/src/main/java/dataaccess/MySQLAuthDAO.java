@@ -64,7 +64,7 @@ public class MySQLAuthDAO implements AuthDAO {
             }
 
         } catch (SQLException exception) {
-            throw new DataAccessException("Error: failed to delete authentication", exception);
+            throw new DataAccessException("Error: failed to delete authentication table", exception);
         }
     }
 }

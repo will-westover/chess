@@ -84,10 +84,32 @@ public class MySQLGameDAO implements GameDAO{
     }
 
     public void updateGame(GameData gameData) throws DataAccessException{
+        var sql = "UPDATE game SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ?  WHERE gameID = ?";
 
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(sql)) {
+                preparedStatement.setString(1, gameData.whiteUsername());
+                preparedStatement.setString(2, gameData.blackUsername());
+                preparedStatement.setString(3, gameData.gameName());
+                var json = new Gson().toJson(gameData.game());
+                preparedStatement.setString(4, json);
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to update game", ex);
+        }
     }
 
     public void clear() throws DataAccessException{
+        var sql = "TRUNCATE TABLE game";
 
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var prepareStatement = conn.prepareStatement(sql)) {
+                prepareStatement.executeUpdate();
+            }
+
+        } catch (SQLException exception) {
+            throw new DataAccessException("Error: failed to delete game table", exception);
+        }
     }
 }
