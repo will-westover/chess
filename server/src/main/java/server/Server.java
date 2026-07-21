@@ -1,9 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import model.AuthData;
@@ -23,6 +21,12 @@ public class Server {
     Gson gson = new Gson();
 
     public Server() {
+        try{
+            DatabaseManager.createTable();
+        } catch (DataAccessException ex){
+            throw new RuntimeException(ex);
+        }
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
         MemoryUserDAO userDAO = new MemoryUserDAO();
