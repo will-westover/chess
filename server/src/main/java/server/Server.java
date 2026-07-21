@@ -29,9 +29,9 @@ public class Server {
 
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
 
-        MemoryUserDAO userDAO = new MemoryUserDAO();
-        MemoryAuthDAO authDAO = new MemoryAuthDAO();
-        MemoryGameDAO gameDAO = new MemoryGameDAO();
+        MySQLUserDAO userDAO = new MySQLUserDAO();
+        MySQLAuthDAO authDAO = new MySQLAuthDAO();
+        MySQLGameDAO gameDAO = new MySQLGameDAO();
 
         clearService = new ClearService(userDAO, authDAO, gameDAO);
         createGameService = new CreateGameService(authDAO, gameDAO);
