@@ -108,7 +108,7 @@ public class MySQLTests {
         var user = makeUser();
         userDAO.createUser(user);
 
-        assertNull(userDAO.getUser("tester"));
+        assertNotNull(userDAO.getUser("tester"));
     }
 
     @Test
