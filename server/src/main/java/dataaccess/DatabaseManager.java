@@ -29,7 +29,18 @@ public class DatabaseManager {
         }
     }
 
-    static public void createTable() {
+    static public void createTable() throws DataAccessException {
+        createDatabase();
+
+        try(var conn = DatabaseManager.getConnection()) {
+            for(var statement: CREATE_STATEMENTS){
+                try(var prepareStatement = conn.prepareStatement(statement)){
+                    prepareStatement.executeUpdate();
+                }
+            }
+        } catch (SQLException exception){
+            throw new DataAccessException("Error: failed to create tables", exception);
+        }
 
     }
 
