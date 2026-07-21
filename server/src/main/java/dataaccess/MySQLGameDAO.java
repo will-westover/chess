@@ -2,7 +2,6 @@ package dataaccess;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import model.AuthData;
 import model.GameData;
 
 import java.sql.SQLException;
@@ -10,7 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class MySQLGameDAO implements GameDAO{
+public class MySQLGameDAO implements GameDAO {
     public int createGame(GameData gameData) throws DataAccessException {
         var sql = "INSERT INTO game (whiteUsername, blackUsername, gameName, game) VALUES (?,?,?,?)";
 
@@ -23,7 +22,7 @@ public class MySQLGameDAO implements GameDAO{
                 prepareStatement.setString(4, json);
                 prepareStatement.executeUpdate();
                 var keys = prepareStatement.getGeneratedKeys();
-                if(keys.next()){
+                if (keys.next()) {
                     return keys.getInt(1);
                 }
             }
@@ -34,7 +33,7 @@ public class MySQLGameDAO implements GameDAO{
         return 0;
     }
 
-    public Collection<GameData> listGames() throws DataAccessException{
+    public Collection<GameData> listGames() throws DataAccessException {
         var sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game";
         var games = new ArrayList<GameData>();
 
@@ -58,7 +57,7 @@ public class MySQLGameDAO implements GameDAO{
         return games;
     }
 
-    public GameData getGame(int gameID) throws DataAccessException{
+    public GameData getGame(int gameID) throws DataAccessException {
         var sql = "SELECT gameID, whiteUsername, blackUsername, gameName, game FROM game WHERE gameID = ?";
 
         try (var conn = DatabaseManager.getConnection()) {
@@ -83,7 +82,7 @@ public class MySQLGameDAO implements GameDAO{
         }
     }
 
-    public void updateGame(GameData gameData) throws DataAccessException{
+    public void updateGame(GameData gameData) throws DataAccessException {
         var sql = "UPDATE game SET whiteUsername = ?, blackUsername = ?, gameName = ?, game = ?  WHERE gameID = ?";
 
         try (var conn = DatabaseManager.getConnection()) {
@@ -101,7 +100,7 @@ public class MySQLGameDAO implements GameDAO{
         }
     }
 
-    public void clear() throws DataAccessException{
+    public void clear() throws DataAccessException {
         var sql = "TRUNCATE TABLE game";
 
         try (var conn = DatabaseManager.getConnection()) {

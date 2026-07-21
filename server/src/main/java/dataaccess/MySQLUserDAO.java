@@ -1,12 +1,11 @@
 package dataaccess;
 
 import model.UserData;
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
 
-public class MySQLUserDAO implements UserDAO{
-    public void createUser(UserData data) throws DataAccessException{
+public class MySQLUserDAO implements UserDAO {
+    public void createUser(UserData data) throws DataAccessException {
         var sql = "INSERT INTO user (username, email, password) VALUES (?,?,?)";
 
         try (var conn = DatabaseManager.getConnection()) {
@@ -22,7 +21,7 @@ public class MySQLUserDAO implements UserDAO{
         }
     }
 
-    public UserData getUser(String username) throws DataAccessException{
+    public UserData getUser(String username) throws DataAccessException {
         var sql = "SELECT username, email, password FROM user WHERE username = ?";
 
         try (var conn = DatabaseManager.getConnection()) {
@@ -31,8 +30,8 @@ public class MySQLUserDAO implements UserDAO{
                 try (var result = prepareStatement.executeQuery()) {
                     if (result.next()) {
                         return new UserData(result.getString("username"),
-                                            result.getString("email"),
-                                            result.getString("password"));
+                                result.getString("email"),
+                                result.getString("password"));
                     }
                     return null;
                 }
@@ -42,7 +41,7 @@ public class MySQLUserDAO implements UserDAO{
         }
     }
 
-    public void clear() throws DataAccessException{
+    public void clear() throws DataAccessException {
         var sql = "TRUNCATE TABLE user";
 
         try (var conn = DatabaseManager.getConnection()) {

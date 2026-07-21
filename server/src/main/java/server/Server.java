@@ -21,9 +21,9 @@ public class Server {
     Gson gson = new Gson();
 
     public Server() {
-        try{
+        try {
             DatabaseManager.createTable();
-        } catch (DataAccessException ex){
+        } catch (DataAccessException ex) {
             throw new RuntimeException(ex);
         }
 

@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class MemoryGameDAO implements GameDAO {
-    int nextId = 1;
     final private HashMap<Integer, GameData> games = new HashMap<>();
+    int nextId = 1;
 
     public int createGame(GameData gameData) {
         int newId = nextId++;

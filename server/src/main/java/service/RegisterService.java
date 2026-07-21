@@ -27,8 +27,8 @@ public class RegisterService {
             throw new ServiceException(403, "Error: already taken");
         }
 
-        var hased = BCrypt.hashpw(user.password(),BCrypt.gensalt());
-        var hashedUser = new UserData(user.username(),user.email(), hased);
+        var hased = BCrypt.hashpw(user.password(), BCrypt.gensalt());
+        var hashedUser = new UserData(user.username(), user.email(), hased);
         userDAO.createUser(hashedUser);
         String authtoken = UUID.randomUUID().toString();
         AuthData auth = new AuthData(authtoken, user.username());
