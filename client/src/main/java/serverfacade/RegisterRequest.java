@@ -1,4 +1,4 @@
 package serverfacade;
 
-public record RegisterRequest(String userName, String email, String password) {
+public record RegisterRequest(String username, String email, String password) {
 }
