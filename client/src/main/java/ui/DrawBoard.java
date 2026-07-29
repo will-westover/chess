@@ -38,8 +38,8 @@ public class DrawBoard {
             for (int j = 0; j < 8; j++) {
                 int file = fileStart + j * fileStep;
                 boolean light = (rank + file) % 2 == 1;
-                String background = light ? SET_BG_COLOR_WHITE: SET_BG_COLOR_DARK_GREY;
-                System.out.print(background + PIECES[rank -1 ][file -1] + RESET_BG_COLOR);
+                String background = light ? SET_BG_COLOR_WHITE : SET_BG_COLOR_DARK_GREY;
+                System.out.print(background + PIECES[rank - 1][file - 1] + RESET_BG_COLOR);
             }
             System.out.println();
         }

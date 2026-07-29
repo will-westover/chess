@@ -53,16 +53,18 @@ public class Repl {
                 return true;
             }
             case "register" -> {
-                if(tokens.length != 4){
-                    System.out.println("Usage: register <USERNAME> <PASSWORD> <EMAIL>"); return false;
+                if (tokens.length != 4) {
+                    System.out.println("Usage: register <USERNAME> <PASSWORD> <EMAIL>");
+                    return false;
                 }
                 var auth = facade.register(tokens[1], tokens[3], tokens[2]);
                 authToken = auth.authToken();
                 System.out.println("Logged in as " + auth.username());
             }
             case "login" -> {
-                if (tokens.length != 3 ){
-                    System.out.println("Usage: register <USERNAME> <PASSWORD>"); return false;
+                if (tokens.length != 3) {
+                    System.out.println("Usage: register <USERNAME> <PASSWORD>");
+                    return false;
                 }
                 var auth = facade.login(tokens[1], tokens[2]);
                 authToken = auth.authToken();
@@ -90,7 +92,7 @@ public class Repl {
                 System.out.println("Logged out.");
             }
             case "create" -> {
-                if (tokens.length != 2 ){
+                if (tokens.length != 2) {
                     System.out.println("Usage: create <NAME>");
                     return;
                 }
@@ -108,16 +110,18 @@ public class Repl {
                 }
             }
             case "play" -> {
-                if (tokens.length < 3){
-                    System.out.println("Usage: play <NUMBER> <WHITE||BLACK> "); return;
+                if (tokens.length < 3) {
+                    System.out.println("Usage: play <NUMBER> <WHITE||BLACK> ");
+                    return;
                 }
                 int number;
-                try{number = Integer.parseInt(tokens[1]); }
-                catch(Exception exception){
+                try {
+                    number = Integer.parseInt(tokens[1]);
+                } catch (Exception exception) {
                     System.out.println("Game number must be a number. Please try again.");
                     return;
                 }
-                if (number < 1 || number > lastList.length){
+                if (number < 1 || number > lastList.length) {
                     System.out.println("No valid game for " + tokens[1] + "Please try again with 'list'.");
                     return;
                 }
@@ -127,17 +131,18 @@ public class Repl {
                 DrawBoard.design(tokens[2].equalsIgnoreCase("WHITE"));
             }
             case "observe" -> {
-                if(tokens.length < 2){
+                if (tokens.length < 2) {
                     System.out.println("Usage: observe <NUMBER>");
                     return;
                 }
                 int number;
-                try{number = Integer.parseInt(tokens[1]); }
-                catch(Exception exception){
+                try {
+                    number = Integer.parseInt(tokens[1]);
+                } catch (Exception exception) {
                     System.out.println("Game number must be a number. Please try again.");
                     return;
                 }
-                if (number < 1 || number > lastList.length){
+                if (number < 1 || number > lastList.length) {
                     System.out.println("No valid game for " + tokens[1] + ". Please try again with 'list'.");
                     return;
                 }
@@ -155,11 +160,19 @@ public class Repl {
 
     private String friendly(Exception e) {
         String msg = e.getMessage();
-        if (msg == null) return "Something went wrong. Please try something else";
-        if (msg.contains("already taken")) return "Sorry, that name is already taken";
-        if(msg.contains("unauthorized")) return "Invalid name or password";
-        if(msg.contains("bad request")) return "Bad request- please check your input";
-        return  "Sorry, something went wrong. Please try 'list' or try again";
+        if (msg == null) {
+            return "Something went wrong. Please try something else";
+        }
+        if (msg.contains("already taken")) {
+            return "Sorry, that name is already taken";
+        }
+        if (msg.contains("unauthorized")) {
+            return "Invalid name or password";
+        }
+        if (msg.contains("bad request")) {
+            return "Bad request- please check your input";
+        }
+        return "Sorry, something went wrong. Please try 'list' or try again";
     }
 
 }

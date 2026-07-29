@@ -21,7 +21,7 @@ public class MySQLGameDAO implements GameDAO {
                 var json = new Gson().toJson(gameData.game());
                 prepareStatement.setString(4, json);
                 prepareStatement.executeUpdate();
-                try (var keys = prepareStatement.getGeneratedKeys()){
+                try (var keys = prepareStatement.getGeneratedKeys()) {
                     if (keys.next()) {
                         return keys.getInt(1);
                     }

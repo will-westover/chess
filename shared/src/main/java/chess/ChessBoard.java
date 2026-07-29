@@ -1,8 +1,6 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -12,7 +10,17 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    ChessPiece [][] squares = new ChessPiece[8][8];
+    ChessPiece[][] squares = new ChessPiece[8][8];
+
+    public ChessBoard() {
+
+    }
+
+    public ChessBoard(ChessBoard copy) {
+        for (int i = 0; i < 8; i++) {
+            squares[i] = copy.squares[i].clone();
+        }
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -27,15 +35,6 @@ public class ChessBoard {
     public int hashCode() {
         return Arrays.deepHashCode(squares);
     }
-    public ChessBoard(){
-
-    }
-
-    public ChessBoard(ChessBoard copy) {
-        for (int i = 0 ; i < 8; i++){
-            squares[i] = copy.squares[i].clone();
-        }
-    }
 
     /**
      * Adds a chess piece to the chessboard
@@ -44,7 +43,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        squares[position.getRow()-1][position.getColumn()-1] = piece;
+        squares[position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     /**
@@ -55,7 +54,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return squares[position.getRow()-1][position.getColumn()-1];
+        return squares[position.getRow() - 1][position.getColumn() - 1];
     }
 
     /**
@@ -63,17 +62,17 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        ChessPiece.PieceType [] backRow = {
-                ChessPiece.PieceType.ROOK,ChessPiece.PieceType.KNIGHT,
-                ChessPiece.PieceType.BISHOP,ChessPiece.PieceType.QUEEN,
+        ChessPiece.PieceType[] backRow = {
+                ChessPiece.PieceType.ROOK, ChessPiece.PieceType.KNIGHT,
+                ChessPiece.PieceType.BISHOP, ChessPiece.PieceType.QUEEN,
                 ChessPiece.PieceType.KING, ChessPiece.PieceType.BISHOP,
                 ChessPiece.PieceType.KNIGHT, ChessPiece.PieceType.ROOK,
         };
-        for(int i=1;i<=8;i++){
-            addPiece(new ChessPosition(1,i),new ChessPiece(ChessGame.TeamColor.WHITE,backRow[i-1]));
-            addPiece(new ChessPosition(8,i),new ChessPiece(ChessGame.TeamColor.BLACK,backRow[i-1]));
-            addPiece(new ChessPosition(2,i),new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
-            addPiece(new ChessPosition(7,i),new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+        for (int i = 1; i <= 8; i++) {
+            addPiece(new ChessPosition(1, i), new ChessPiece(ChessGame.TeamColor.WHITE, backRow[i - 1]));
+            addPiece(new ChessPosition(8, i), new ChessPiece(ChessGame.TeamColor.BLACK, backRow[i - 1]));
+            addPiece(new ChessPosition(2, i), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+            addPiece(new ChessPosition(7, i), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
         }
     }
 }
