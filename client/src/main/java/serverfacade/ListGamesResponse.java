@@ -1,4 +1,4 @@
 package serverfacade;
 
-public record ListGamesResponse (GameData[] games){
+public record ListGamesResponse(GameData[] games) {
 }
