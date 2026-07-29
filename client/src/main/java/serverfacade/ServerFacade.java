@@ -36,7 +36,10 @@ public class ServerFacade {
         http.connect();
 
         if (http.getResponseCode() / 100 != 2) {
-            throw new Exception("failure: " + http.getResponseCode());
+            try(InputStream error = http.getErrorStream()) {
+                String errorBody = error == null ? "" : new String(error.readAllBytes());
+                throw new Exception("failure: " + http.getResponseCode() + " " + errorBody);
+            }
         }
 
         if (responseClass == null) {
@@ -73,7 +76,8 @@ public class ServerFacade {
     }
 
     public void joinGame(String color, int gameID, String authToken) throws Exception {
-        makeRequest("PUT", "/game", null, authToken, JoinGameRequest.class);
+        var request = new JoinGameRequest(color, gameID);
+        makeRequest("PUT", "/game", request, authToken, null);
     }
 
     public void clear() throws Exception {
