@@ -32,6 +32,15 @@ public class DrawBoard {
         int fileStart = whiteSide ? 1 : 8;
         int fileStep = whiteSide ? 1 : -1;
 
+        String[] files = whiteSide
+                ? new String[] {"a", "b", "c", "d", "e", "f", "g", "h"}
+                : new String[] {"h", "g", "f", "e", "d", "c", "b", "a"};
+        System.out.print("   ");
+        for (String file: files) {
+            System.out.print(" " + file + " ");
+        }
+        System.out.println();
+
         for (int i = 0; i < 8; i++) {
             int rank = rankStart + i * rankStep;
             System.out.print(" " + rank + " ");
@@ -43,5 +52,10 @@ public class DrawBoard {
             }
             System.out.println();
         }
+        System.out.print("   ");
+        for (String file: files) {
+            System.out.print(" " + file + " ");
+        }
+        System.out.println();
     }
 }
