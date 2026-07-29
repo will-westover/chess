@@ -44,8 +44,8 @@ public class Repl {
     private boolean preLogin(String cmd, String[] tokens) throws Exception {
         switch (cmd) {
             case "help" -> System.out.println("""
-                    register <USERNAME><PASSWORD><EMAIL> - create account
-                    login <USERNAME><PASSWORD> - sign in
+                    register <USERNAME> <PASSWORD> <EMAIL> - to create an account
+                    login <USERNAME> <PASSWORD> - to sign in
                     quit - exit
                     help - show this menu""");
             case "quit" -> {
@@ -53,14 +53,20 @@ public class Repl {
                 return true;
             }
             case "register" -> {
+                if(tokens.length != 4){
+                    System.out.println("Usage: register <USERNAME> <PASSWORD> <EMAIL>"); return false;
+                }
                 var auth = facade.register(tokens[1], tokens[3], tokens[2]);
                 authToken = auth.authToken();
-                System.out.println("Logged in as" + auth.username());
+                System.out.println("Logged in as " + auth.username());
             }
             case "login" -> {
+                if (tokens.length != 3 ){
+                    System.out.println("Usage: register <USERNAME> <PASSWORD>"); return false;
+                }
                 var auth = facade.login(tokens[1], tokens[2]);
                 authToken = auth.authToken();
-                System.out.println("Logged in as" + auth.username());
+                System.out.println("Logged in as " + auth.username());
             }
             default -> System.out.println("Command not recognized, type 'help' instead");
         }
@@ -70,13 +76,13 @@ public class Repl {
     private void postLogin(String cmd, String[] tokens) throws Exception {
         switch (cmd) {
             case "help" -> System.out.println("""
-                    create <NAME> - create a new game
-                    list - list all games
-                    play <NUMBER><WHITE||BLACK> join a game
-                    observe <NUMBER>- watch a game
-                    logout - sign out
-                    quit - exit 
-                    help - show menu
+                    create <NAME> - to create a new game
+                    list - to list all games
+                    play <NUMBER> <WHITE||BLACK> to join a game
+                    observe <NUMBER> - to watch a game
+                    logout - to sign out
+                    quit - to exit 
+                    help - to show menu
                     """);
             case "logout" -> {
                 facade.logout(authToken);
@@ -84,6 +90,10 @@ public class Repl {
                 System.out.println("Logged out.");
             }
             case "create" -> {
+                if (tokens.length != 2 ){
+                    System.out.println("Usage: create <NAME>");
+                    return;
+                }
                 facade.createGame(tokens[1], authToken);
                 System.out.println("Created game: " + tokens[1]);
             }
@@ -98,14 +108,40 @@ public class Repl {
                 }
             }
             case "play" -> {
-                int gameId = lastList[Integer.parseInt(tokens[1]) - 1].gameID();
+                if (tokens.length < 3){
+                    System.out.println("Usage: play <NUMBER> <WHITE||BLACK> "); return;
+                }
+                int number;
+                try{number = Integer.parseInt(tokens[1]); }
+                catch(Exception exception){
+                    System.out.println("Game number must be a number. Please try again.");
+                    return;
+                }
+                if (number < 1 || number > lastList.length){
+                    System.out.println("No valid game for " + tokens[1] + "Please try again with 'list'.");
+                    return;
+                }
+                int gameId = lastList[number - 1].gameID();
                 facade.joinGame(tokens[2].toUpperCase(), gameId, authToken);
                 System.out.println("Joined game: ");
                 DrawBoard.design(tokens[2].equalsIgnoreCase("WHITE"));
             }
             case "observe" -> {
-                lastList[Integer.parseInt(tokens[1]) - 1].gameID();
-                System.out.println("Joined game: ");
+                if(tokens.length < 2){
+                    System.out.println("Usage: observe <NUMBER>");
+                    return;
+                }
+                int number;
+                try{number = Integer.parseInt(tokens[1]); }
+                catch(Exception exception){
+                    System.out.println("Game number must be a number. Please try again.");
+                    return;
+                }
+                if (number < 1 || number > lastList.length){
+                    System.out.println("No valid game for " + tokens[1] + ". Please try again with 'list'.");
+                    return;
+                }
+                System.out.println("Observing game: ");
                 DrawBoard.design(true);
             }
             case "quit" -> {
@@ -118,7 +154,12 @@ public class Repl {
     }
 
     private String friendly(Exception e) {
-        return e.getMessage();
+        String msg = e.getMessage();
+        if (msg == null) return "Something went wrong. Please try something else";
+        if (msg.contains("already taken")) return "Sorry, that name is already taken";
+        if(msg.contains("unauthorized")) return "Invalid name or password";
+        if(msg.contains("bad request")) return "Bad request- please check your input";
+        return  "Sorry, something went wrong. Please try 'list' or try again";
     }
 
 }
