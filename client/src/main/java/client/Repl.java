@@ -2,6 +2,7 @@ package client;
 
 import serverfacade.GameData;
 import serverfacade.ServerFacade;
+import ui.DrawBoard;
 
 import java.util.Scanner;
 
@@ -100,12 +101,12 @@ public class Repl {
                 int gameId = lastList[Integer.parseInt(tokens[1]) - 1].gameID();
                 facade.joinGame(tokens[2].toUpperCase(), gameId, authToken);
                 System.out.println("Joined game: ");
-                //add the draw board here
+                DrawBoard.design(tokens[2].equalsIgnoreCase("WHITE"));
             }
             case "observe" -> {
                 lastList[Integer.parseInt(tokens[1]) - 1].gameID();
                 System.out.println("Joined game: ");
-                //add the draw board here too
+                DrawBoard.design(true);
             }
             case "quit" -> {
                 System.out.println("Log out first please");
