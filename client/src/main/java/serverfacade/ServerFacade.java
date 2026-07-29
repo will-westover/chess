@@ -36,7 +36,7 @@ public class ServerFacade {
         http.connect();
 
         if (http.getResponseCode() / 100 != 2) {
-            try(InputStream error = http.getErrorStream()) {
+            try (InputStream error = http.getErrorStream()) {
                 String errorBody = error == null ? "" : new String(error.readAllBytes());
                 throw new Exception("failure: " + http.getResponseCode() + " " + errorBody);
             }
