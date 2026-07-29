@@ -72,9 +72,8 @@ public class ServerFacade {
         return makeRequest("GET", "/game", null, authToken, ListGamesResponse.class);
     }
 
-    public JoinGameRequest joinGame(String color, int gameID, String authToken) throws Exception {
-        var request = new JoinGameRequest(color, gameID);
-        return makeRequest("PUT", "/game", request, authToken, JoinGameRequest.class);
+    public void joinGame(String color, int gameID, String authToken) throws Exception {
+        makeRequest("PUT", "/game", null, authToken, JoinGameRequest.class);
     }
 
     public void clear() throws Exception {
