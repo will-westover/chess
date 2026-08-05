@@ -21,7 +21,7 @@ public class Server {
     RegisterService registerService;
     ListGamesService listGamesService;
     Gson gson = new Gson();
-    WebSocketHandler webSocketHandler = new WebSocketHandler();
+    WebSocketHandler webSocketHandler;
 
     public Server() {
         try {
@@ -35,6 +35,8 @@ public class Server {
         MySQLUserDAO userDAO = new MySQLUserDAO();
         MySQLAuthDAO authDAO = new MySQLAuthDAO();
         MySQLGameDAO gameDAO = new MySQLGameDAO();
+        gameDAO = new MySQLGameDAO();
+        webSocketHandler = new WebSocketHandler(authDAO, gameDAO);
 
         clearService = new ClearService(userDAO, authDAO, gameDAO);
         createGameService = new CreateGameService(authDAO, gameDAO);
