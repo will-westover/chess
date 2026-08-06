@@ -13,6 +13,9 @@ import java.util.Objects;
 public class ChessGame {
     private ChessBoard board;
     private TeamColor turn;
+    private boolean gameOver = false;
+    public boolean isGameOver() {return gameOver;}
+    public void setGameOver(boolean gameOver){this.gameOver = gameOver;}
 
     public ChessGame() {
         this.board = new ChessBoard();

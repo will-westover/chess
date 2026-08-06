@@ -36,7 +36,7 @@ public class Repl implements ServerMessageObserver {
                 DrawBoard.design(true);
             }
             case NOTIFICATION -> System.out.println("\n" + ((NotificationMessage)message).getMessage());
-            case ERROR -> System.out.println("\n" + ((ErrorMessage)message).getError());
+            case ERROR -> System.out.println("\n" + ((ErrorMessage)message).getErrorMessage());
         }
     }
 
