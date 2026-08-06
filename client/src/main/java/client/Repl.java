@@ -6,15 +6,34 @@ import ui.DrawBoard;
 
 import java.util.Scanner;
 
+import chess.ChessGame;
+import websocket.ServerMessageObserver;
+import websocket.WebSocketFacade;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
+import websocket.messages.ServerMessage;
 
-public class Repl {
-
+public class Repl implements ServerMessageObserver {
+    private WebSocketFacade ws;
     private final ServerFacade facade;
     private String authToken = null;
     private GameData[] lastList = new GameData[0];
-
     public Repl(int port) {
         this.facade = new ServerFacade(port);
+    }
+
+
+    @Override
+    public void notify(ServerMessage message){
+        switch (message.getServerMessageType()){
+            case LOAD_GAME -> {
+                ChessGame game = ((LoadGameMessage) message).getGame();
+                DrawBoard.design(true);
+            }
+            case NOTIFICATION -> System.out.println("\n" + ((NotificationMessage)message).getMessage());
+            case ERROR -> System.out.println("\n" + ((ErrorMessage)message).getError());
+        }
     }
 
     public void run() {
