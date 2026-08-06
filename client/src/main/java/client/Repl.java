@@ -13,13 +13,17 @@ import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
+import websocket.commands.UserGameCommand;
 
 public class Repl implements ServerMessageObserver {
     private WebSocketFacade ws;
     private final ServerFacade facade;
     private String authToken = null;
     private GameData[] lastList = new GameData[0];
-    public Repl(int port) {
+    private final int port;
+
+    public Repl(int port){
+        this.port = port;
         this.facade = new ServerFacade(port);
     }
 
@@ -147,7 +151,8 @@ public class Repl implements ServerMessageObserver {
                 int gameId = lastList[number - 1].gameID();
                 facade.joinGame(tokens[2].toUpperCase(), gameId, authToken);
                 System.out.println("Joined game: ");
-                DrawBoard.design(tokens[2].equalsIgnoreCase("WHITE"));
+                ws = new WebSocketFacade(port, this);
+                ws.send(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId));
             }
             case "observe" -> {
                 if (tokens.length < 2) {
@@ -166,7 +171,9 @@ public class Repl implements ServerMessageObserver {
                     return;
                 }
                 System.out.println("Observing game: ");
-                DrawBoard.design(true);
+                int gameId = lastList[number -1].gameID();
+                ws = new WebSocketFacade(port, this);
+                ws.send(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId));
             }
             case "quit" -> {
                 System.out.println("Log out first please");
