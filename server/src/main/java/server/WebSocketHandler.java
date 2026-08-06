@@ -20,8 +20,6 @@ public class WebSocketHandler {
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
     private final Gson gson = new Gson();
-    private final java.util.concurrent.ConcurrentHashMap<Integer, Boolean>
-    gameOver = new java.util.concurrent.ConcurrentHashMap<>();
 
     public WebSocketHandler(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
@@ -44,13 +42,16 @@ public class WebSocketHandler {
 
     private void makeMove(Session session, MakeMoveCommand command) throws Exception{
         AuthData auth = authDAO.getAuth(command.getAuthToken());
+
         if(auth == null){sendError(session, "Error: invalid auth token"); return;}
         GameData gameData = gameDAO.getGame(command.getGameID());
-        if(gameData == null){sendError(session, "Error: invalid game"); return;}
-        if(Boolean.TRUE.equals(gameOver.get(command.getGameID()))){
+
+        if(gameData == null){sendError(session, "Error: invalid game");return;}
+        ChessGame game = gameData.game();
+
+        if(game.isGameOver()){
             sendError(session, "Error: game is now over"); return;
         }
-        ChessGame game = gameData.game();
         String username = auth.username();
 
         ChessGame.TeamColor color;
@@ -65,8 +66,6 @@ public class WebSocketHandler {
             sendError(session, "Error: invalid move"); return;
         }
 
-        gameDAO.updateGame(new GameData(gameData.gameID(), gameData.whiteUsername(),
-                gameData.blackUsername(),gameData.gameName(), game));
         connections.broadcast(command.getGameID(), null, gson.toJson(new LoadGameMessage(game)));
         connections.broadcast(command.getGameID(), command.getAuthToken(),
                 gson.toJson(new NotificationMessage(username + " made a move")));
@@ -76,19 +75,57 @@ public class WebSocketHandler {
         if(game.isInCheckmate(opponent)){
             connections.broadcast(command.getGameID(), null,
                     gson.toJson(new NotificationMessage("Checkmate! " + username + " wins")));
-            gameOver.put(command.getGameID(), true);
+            game.setGameOver(true);
         } else if(game.isInStalemate(opponent)){
             connections.broadcast(command.getGameID(), null,
                     gson.toJson(new NotificationMessage("Stalemate")));
-            gameOver.put(command.getGameID(), true);
+            game.setGameOver(true);
         } else if (game.isInCheck(opponent)) {
             connections.broadcast(command.getGameID(), null,
                     gson.toJson(new NotificationMessage("Check")));
         }
+        gameDAO.updateGame(new GameData(gameData.gameID(), gameData.whiteUsername(),
+                gameData.blackUsername(),gameData.gameName(), game));
     }
 
-    private void leave(Session session, UserGameCommand command) throws Exception{};
-    private void resign(Session session, UserGameCommand command) throws Exception {};
+    private void leave(Session session, UserGameCommand command) throws Exception{
+        AuthData auth = authDAO.getAuth(command.getAuthToken());
+        if (auth == null){sendError(session, "Error: invalid auth token"); return;}
+        GameData gameData = gameDAO.getGame(command.getGameID());
+        String username = auth.username();
+
+        if (gameData != null){
+            if (username.equals(gameData.whiteUsername())){
+                gameDAO.updateGame(new GameData(gameData.gameID(),null, gameData.blackUsername(),
+                        gameData.gameName(), gameData.game()));
+            } else if (username.equals(gameData.blackUsername())) {
+                gameDAO.updateGame(new GameData(gameData.gameID(), gameData.whiteUsername(),
+                        null, gameData.gameName(), gameData.game()));
+            }
+        }
+        connections.remove(command.getGameID(), command.getAuthToken());
+        connections.broadcast(command.getGameID(), command.getAuthToken(),
+                gson.toJson(new NotificationMessage(username + " left the game")));
+    };
+    private void resign(Session session, UserGameCommand command) throws Exception {
+        AuthData auth = authDAO.getAuth(command.getAuthToken());
+        if (auth == null){sendError(session, "Error: invalid auth token"); return;}
+        GameData gameData = gameDAO.getGame(command.getGameID());
+        if(gameData == null) {sendError(session, "Error: invalid game");return;}
+        String username = auth.username();
+
+        boolean isPlayer = username.equals(gameData.whiteUsername()) || username.equals(gameData.blackUsername());
+        if(!isPlayer) {sendError(session, "Error: observers cannot resign"); return;}
+        if(gameData.game().isGameOver()){
+            sendError(session, "Error: game is over");return;
+        }
+        ChessGame game = gameData.game();
+        game.setGameOver(true);
+        gameDAO.updateGame(new GameData(gameData.gameID(),
+                gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), game));
+        connections.broadcast(command.getGameID(), null,
+                gson.toJson(new NotificationMessage(username + " resigned")));
+    };
 
     public void connect(Session session, UserGameCommand command) throws Exception{
         AuthData auth = authDAO.getAuth(command.getAuthToken());
