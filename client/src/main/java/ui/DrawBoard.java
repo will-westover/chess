@@ -26,7 +26,8 @@ public class DrawBoard {
                 boolean light = (rank + file) % 2 == 1;
                 String background = light ? LIGHT_SQUARE : DARK_SQUARE;
                 var piece = board.getPiece(new ChessPosition(rank, file));
-                String foreground = piece == null ? "" : (piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_WHITE : SET_TEXT_COLOR_BLACK);
+                String foreground = piece == null ? "" : (piece.getTeamColor() ==
+                        ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_WHITE : SET_TEXT_COLOR_BLACK);
                 System.out.print(background + foreground + glyph(piece) + RESET_TEXT_COLOR + RESET_BG_COLOR);
             }
             System.out.println(" " + rank + " ");
