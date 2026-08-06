@@ -1,5 +1,7 @@
 package client;
 
+import chess.ChessMove;
+import chess.ChessPosition;
 import serverfacade.GameData;
 import serverfacade.ServerFacade;
 import ui.DrawBoard;
@@ -9,6 +11,7 @@ import java.util.Scanner;
 import chess.ChessGame;
 import websocket.ServerMessageObserver;
 import websocket.WebSocketFacade;
+import websocket.commands.MakeMoveCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
@@ -37,7 +40,7 @@ public class Repl implements ServerMessageObserver {
         switch (message.getServerMessageType()){
             case LOAD_GAME -> {
                 currentGame = ((LoadGameMessage)message).getGame();
-                DrawBoard.design(true);
+                DrawBoard.design(currentGame, !"BLACK".equals(playerColor));
             }
             case NOTIFICATION -> System.out.println("\n" + ((NotificationMessage)message).getMessage());
             case ERROR -> System.out.println("\n" + ((ErrorMessage)message).getErrorMessage());
@@ -59,9 +62,8 @@ public class Repl implements ServerMessageObserver {
                         return;
                     }
                 } else if (inGame){
-                    postLogin(cmd, tokens);
-                }
-                else {
+                    gamePlay(cmd, tokens);
+                } else {
                     postLogin(cmd, tokens);
                 }
             } catch (Exception e) {
@@ -198,6 +200,40 @@ public class Repl implements ServerMessageObserver {
     }
 
     private void gamePlay(String cmd, String[] tokens) throws Exception{
+        switch (cmd){
+            case "help" -> System.out.println("""
+                    redraw - redraw the board
+                    move <FROM> <TO> make a move (ex: move e3 e4);
+                    highlight <POS> - show legal moves for a piece
+                    leave - leave the game
+                    resign - forfeit the game
+                    help - show this menu
+                    """);
+            case "redraw" -> DrawBoard.design(currentGame, !"BLACK".equals(playerColor));
+            case "leave" -> {
+                ws.send(new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, currentGameID));
+                inGame = false;
+            }
+            case "resign" -> {}
+            case "move" -> {
+                if(tokens.length < 3){
+                    System.out.println("Usage: move <FROM> <TO> (ex: move e5 e4");
+                } else {
+                    ChessPosition start = parsePos(tokens[1]);
+                    ChessPosition end = parsePos(tokens[2]);
+                    ws.send(new MakeMoveCommand(authToken, currentGameID,
+                            new ChessMove(start, end, null)));
+                }
+            }
+            case "highlight" -> {}
+            default -> System.out.println("Unknown command. Try typing 'help'. ");
+        }
+    }
+
+    private ChessPosition parsePos(String string){
+        int col = string.charAt(0) - 'a' +1;
+        int row = string.charAt(1) - '0';
+        return new ChessPosition(row, col);
     }
 
     private String friendly(Exception e) {
