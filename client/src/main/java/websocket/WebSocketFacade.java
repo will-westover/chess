@@ -24,7 +24,7 @@ public class WebSocketFacade extends Endpoint {
         public void onMessage(String json){
             ServerMessage base = gson.fromJson(json, ServerMessage.class);
             ServerMessage full = switch (base.getServerMessageType()){
-                case LOAD_GAME ->  gson.fromJson(json, ServerMessage.class);
+                case LOAD_GAME ->  gson.fromJson(json, LoadGameMessage.class);
                 case NOTIFICATION -> gson.fromJson(json, NotificationMessage.class);
                 case ERROR -> gson.fromJson(json, ErrorMessage.class);
             };
