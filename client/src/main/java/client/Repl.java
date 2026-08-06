@@ -41,7 +41,8 @@ public class Repl implements ServerMessageObserver {
         switch (message.getServerMessageType()){
             case LOAD_GAME -> {
                 currentGame = ((LoadGameMessage)message).getGame();
-                DrawBoard.design(currentGame, !"BLACK".equals(playerColor));
+                System.out.println();
+                DrawBoard.design(currentGame, whiteView());
             }
             case NOTIFICATION -> System.out.println("\n" + ((NotificationMessage)message).getMessage());
             case ERROR -> System.out.println("\n" + ((ErrorMessage)message).getErrorMessage());
@@ -95,7 +96,7 @@ public class Repl implements ServerMessageObserver {
             }
             case "login" -> {
                 if (tokens.length != 3) {
-                    System.out.println("Usage: register <USERNAME> <PASSWORD>");
+                    System.out.println("Usage: login <USERNAME> <PASSWORD>");
                     return false;
                 }
                 var auth = facade.login(tokens[1], tokens[2]);
@@ -154,12 +155,12 @@ public class Repl implements ServerMessageObserver {
                     return;
                 }
                 if (number < 1 || number > lastList.length) {
-                    System.out.println("No valid game for " + tokens[1] + "Please try again with 'list'.");
+                    System.out.println("No valid game for " + tokens[1] + ". Please try again with 'list'.");
                     return;
                 }
                 int gameId = lastList[number - 1].gameID();
                 facade.joinGame(tokens[2].toUpperCase(), gameId, authToken);
-                System.out.println("Joined game: ");
+                System.out.println("Joined game as: " + tokens[2].toUpperCase());
                 ws = new WebSocketFacade(port, this);
                 ws.send(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId));
                 inGame = true;
@@ -203,13 +204,16 @@ public class Repl implements ServerMessageObserver {
         switch (cmd){
             case "help" -> System.out.println("""
                     redraw - redraw the board
-                    move <FROM> <TO> make a move (ex: move e3 e4);
+                    move <FROM> <TO> make a move (ex: move e3 e4)
                     highlight <POS> - show legal moves for a piece
                     leave - leave the game
                     resign - forfeit the game
                     help - show this menu
                     """);
-            case "redraw" -> DrawBoard.design(currentGame, !"BLACK".equals(playerColor));
+            case "redraw" -> {
+                if(currentGame == null){System.out.println("Game still loading, please try again."); return;}
+                DrawBoard.design(currentGame, whiteView());
+            }
             case "leave" -> {
                 ws.send(new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, currentGameID));
                 inGame = false;
@@ -223,6 +227,7 @@ public class Repl implements ServerMessageObserver {
                 }
             }
             case "move" -> {
+                if(currentGame == null){System.out.println("Game still loading, please try again."); return;}
                 if(tokens.length < 3){
                     System.out.println("Usage: move <FROM> <TO> (ex: move e5 e4");
                 } else {
@@ -233,10 +238,11 @@ public class Repl implements ServerMessageObserver {
                 }
             }
             case "highlight" -> {
+                if(currentGame == null){System.out.println("Game still loading, please try again."); return;}
                 if (tokens.length < 2){
                     System.out.println("Usage: highlight <POS> (ex highlight e2");
                 } else {
-                    DrawBoard.highlight(currentGame, !"BLACK".equals(playerColor), parsePos(tokens[1]));
+                    DrawBoard.highlight(currentGame, whiteView(), parsePos(tokens[1]));
                 }
             }
             default -> System.out.println("Unknown command. Try typing 'help'. ");
@@ -265,5 +271,5 @@ public class Repl implements ServerMessageObserver {
         }
         return "Sorry, something went wrong. Please try 'list' or try again";
     }
-
+    private boolean whiteView() {return !"BLACK".equals(playerColor);}
 }

@@ -7,31 +7,8 @@ import chess.ChessPosition;
 import static ui.EscapeSequences.*;
 
 public class DrawBoard {
-    private static final String[][] PIECES = new String[8][8];
     private static final String LIGHT_SQUARE = "\u001b[48;5;230m";
     private static final String DARK_SQUARE = "\u001b[48;5;107m";
-
-
-    static {
-        String[] whitePieces = {
-                WHITE_ROOK, WHITE_KNIGHT, WHITE_BISHOP, WHITE_QUEEN,
-                WHITE_KING, WHITE_BISHOP, WHITE_KNIGHT, WHITE_ROOK
-        };
-        String[] blackPieces = {
-                BLACK_ROOK, BLACK_KNIGHT, BLACK_BISHOP, BLACK_QUEEN,
-                BLACK_KING, BLACK_BISHOP, BLACK_KNIGHT, BLACK_ROOK
-        };
-
-        for (int i = 0; i < 8; i++) {
-            PIECES[0][i] = whitePieces[i];
-            PIECES[1][i] = WHITE_PAWN;
-            PIECES[6][i] = BLACK_PAWN;
-            PIECES[7][i] = blackPieces[i];
-            for (int j = 2; j <= 5; j++) {
-                PIECES[j][i] = EMPTY;
-            }
-        }
-    }
 
     public static void design(ChessGame game, boolean whiteSide) {
         var board = game.getBoard();
