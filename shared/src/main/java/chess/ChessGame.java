@@ -14,13 +14,19 @@ public class ChessGame {
     private ChessBoard board;
     private TeamColor turn;
     private boolean gameOver = false;
-    public boolean isGameOver() {return gameOver;}
-    public void setGameOver(boolean gameOver){this.gameOver = gameOver;}
 
     public ChessGame() {
         this.board = new ChessBoard();
         this.board.resetBoard();
         this.turn = TeamColor.WHITE;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        this.gameOver = gameOver;
     }
 
     @Override

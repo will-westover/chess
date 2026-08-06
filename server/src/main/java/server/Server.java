@@ -6,8 +6,6 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 import model.AuthData;
 import model.UserData;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import service.*;
 
 
@@ -62,12 +60,12 @@ public class Server {
             ctx.status(500);
             ctx.result(gson.toJson(new ErrorResult("Error: " + exception.getMessage())));
         }));
-        javalin.ws("/ws", ws->{
-            ws.onConnect(ctx-> {
+        javalin.ws("/ws", ws -> {
+            ws.onConnect(ctx -> {
                 ctx.enableAutomaticPings();
                 webSocketHandler.onConnect(ctx.session);
             });
-            ws.onMessage(ctx-> webSocketHandler.onMessage(ctx.session, ctx.message()));
+            ws.onMessage(ctx -> webSocketHandler.onMessage(ctx.session, ctx.message()));
             ws.onClose((ctx -> webSocketHandler.onClose(ctx.session)));
         });
 

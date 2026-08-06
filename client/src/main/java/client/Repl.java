@@ -1,51 +1,50 @@
 package client;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
 import serverfacade.GameData;
 import serverfacade.ServerFacade;
 import ui.DrawBoard;
-
-import java.util.Scanner;
-
-import chess.ChessGame;
 import websocket.ServerMessageObserver;
 import websocket.WebSocketFacade;
 import websocket.commands.MakeMoveCommand;
+import websocket.commands.UserGameCommand;
 import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
-import websocket.commands.UserGameCommand;
+
+import java.util.Scanner;
 
 public class Repl implements ServerMessageObserver {
-    private WebSocketFacade ws;
     private final ServerFacade facade;
+    private final int port;
+    private final Scanner scanner = new Scanner(System.in);
+    private WebSocketFacade ws;
     private String authToken = null;
     private GameData[] lastList = new GameData[0];
-    private final int port;
     private boolean inGame = false;
     private int currentGameID;
     private String playerColor;
     private ChessGame currentGame;
-    private final Scanner scanner = new Scanner(System.in);
 
-    public Repl(int port){
+    public Repl(int port) {
         this.port = port;
         this.facade = new ServerFacade(port);
     }
 
 
     @Override
-    public void notify(ServerMessage message){
-        switch (message.getServerMessageType()){
+    public void notify(ServerMessage message) {
+        switch (message.getServerMessageType()) {
             case LOAD_GAME -> {
-                currentGame = ((LoadGameMessage)message).getGame();
+                currentGame = ((LoadGameMessage) message).getGame();
                 System.out.println();
                 DrawBoard.design(currentGame, whiteView());
             }
-            case NOTIFICATION -> System.out.println("\n" + ((NotificationMessage)message).getMessage());
-            case ERROR -> System.out.println("\n" + ((ErrorMessage)message).getErrorMessage());
+            case NOTIFICATION -> System.out.println("\n" + ((NotificationMessage) message).getMessage());
+            case ERROR -> System.out.println("\n" + ((ErrorMessage) message).getErrorMessage());
         }
     }
 
@@ -62,7 +61,7 @@ public class Repl implements ServerMessageObserver {
                     if (preLogin(cmd, tokens)) {
                         return;
                     }
-                } else if (inGame){
+                } else if (inGame) {
                     gamePlay(cmd, tokens);
                 } else {
                     postLogin(cmd, tokens);
@@ -184,7 +183,7 @@ public class Repl implements ServerMessageObserver {
                     return;
                 }
                 System.out.println("Observing game: ");
-                int gameId = lastList[number -1].gameID();
+                int gameId = lastList[number - 1].gameID();
                 ws = new WebSocketFacade(port, this);
                 ws.send(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId));
                 inGame = true;
@@ -200,8 +199,8 @@ public class Repl implements ServerMessageObserver {
         }
     }
 
-    private void gamePlay(String cmd, String[] tokens) throws Exception{
-        switch (cmd){
+    private void gamePlay(String cmd, String[] tokens) throws Exception {
+        switch (cmd) {
             case "help" -> System.out.println("""
                     redraw - redraw the board
                     move <FROM> <TO> make a move (ex: move e3 e4)
@@ -211,7 +210,10 @@ public class Repl implements ServerMessageObserver {
                     help - show this menu
                     """);
             case "redraw" -> {
-                if(currentGame == null){System.out.println("Game still loading, please try again."); return;}
+                if (currentGame == null) {
+                    System.out.println("Game still loading, please try again.");
+                    return;
+                }
                 DrawBoard.design(currentGame, whiteView());
             }
             case "leave" -> {
@@ -220,15 +222,18 @@ public class Repl implements ServerMessageObserver {
             }
             case "resign" -> {
                 System.out.println("Are you sure you want to resign? (yes/no)");
-                if(scanner.nextLine().trim().equalsIgnoreCase("yes")){
+                if (scanner.nextLine().trim().equalsIgnoreCase("yes")) {
                     ws.send(new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, currentGameID));
                 } else {
                     System.out.println("Resignation was cancelled successfully");
                 }
             }
             case "move" -> {
-                if(currentGame == null){System.out.println("Game still loading, please try again."); return;}
-                if(tokens.length < 3){
+                if (currentGame == null) {
+                    System.out.println("Game still loading, please try again.");
+                    return;
+                }
+                if (tokens.length < 3) {
                     System.out.println("Usage: move <FROM> <TO> (ex: move e5 e4");
                 } else {
                     ChessPosition start = parsePos(tokens[1]);
@@ -238,8 +243,11 @@ public class Repl implements ServerMessageObserver {
                 }
             }
             case "highlight" -> {
-                if(currentGame == null){System.out.println("Game still loading, please try again."); return;}
-                if (tokens.length < 2){
+                if (currentGame == null) {
+                    System.out.println("Game still loading, please try again.");
+                    return;
+                }
+                if (tokens.length < 2) {
                     System.out.println("Usage: highlight <POS> (ex highlight e2");
                 } else {
                     DrawBoard.highlight(currentGame, whiteView(), parsePos(tokens[1]));
@@ -249,8 +257,8 @@ public class Repl implements ServerMessageObserver {
         }
     }
 
-    private ChessPosition parsePos(String string){
-        int col = string.charAt(0) - 'a' +1;
+    private ChessPosition parsePos(String string) {
+        int col = string.charAt(0) - 'a' + 1;
         int row = string.charAt(1) - '0';
         return new ChessPosition(row, col);
     }
@@ -271,5 +279,8 @@ public class Repl implements ServerMessageObserver {
         }
         return "Sorry, something went wrong. Please try 'list' or try again";
     }
-    private boolean whiteView() {return !"BLACK".equals(playerColor);}
+
+    private boolean whiteView() {
+        return !"BLACK".equals(playerColor);
+    }
 }
