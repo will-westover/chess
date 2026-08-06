@@ -21,6 +21,10 @@ public class Repl implements ServerMessageObserver {
     private String authToken = null;
     private GameData[] lastList = new GameData[0];
     private final int port;
+    private boolean inGame = false;
+    private int currentGameID;
+    private String playerColor;
+    private ChessGame currentGame;
 
     public Repl(int port){
         this.port = port;
@@ -32,7 +36,7 @@ public class Repl implements ServerMessageObserver {
     public void notify(ServerMessage message){
         switch (message.getServerMessageType()){
             case LOAD_GAME -> {
-                ChessGame game = ((LoadGameMessage) message).getGame();
+                currentGame = ((LoadGameMessage)message).getGame();
                 DrawBoard.design(true);
             }
             case NOTIFICATION -> System.out.println("\n" + ((NotificationMessage)message).getMessage());
@@ -44,7 +48,7 @@ public class Repl implements ServerMessageObserver {
         System.out.println("Welcome to the CS 240 chess game. Type 'help' to get started.");
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.print(authToken == null ? "\n [LOGGED OUT]>>> " : "\n[LOGGED IN] >>> ");
+            System.out.print(authToken == null ? "\n [LOGGED OUT]>>> " : inGame ? "\n[GAME] >>> " : "\n[LOGGED IN] >>> ");
             String line = scanner.nextLine().trim();
             String[] tokens = line.split(" ");
             String cmd = tokens[0].toLowerCase();
@@ -54,7 +58,10 @@ public class Repl implements ServerMessageObserver {
                     if (preLogin(cmd, tokens)) {
                         return;
                     }
-                } else {
+                } else if (inGame){
+                    postLogin(cmd, tokens);
+                }
+                else {
                     postLogin(cmd, tokens);
                 }
             } catch (Exception e) {
@@ -153,6 +160,9 @@ public class Repl implements ServerMessageObserver {
                 System.out.println("Joined game: ");
                 ws = new WebSocketFacade(port, this);
                 ws.send(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId));
+                inGame = true;
+                currentGameID = gameId;
+                playerColor = tokens[2].toUpperCase();
             }
             case "observe" -> {
                 if (tokens.length < 2) {
@@ -174,6 +184,9 @@ public class Repl implements ServerMessageObserver {
                 int gameId = lastList[number -1].gameID();
                 ws = new WebSocketFacade(port, this);
                 ws.send(new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameId));
+                inGame = true;
+                currentGameID = gameId;
+                playerColor = null;
             }
             case "quit" -> {
                 System.out.println("Log out first please");
@@ -182,6 +195,9 @@ public class Repl implements ServerMessageObserver {
                 System.out.println("Unknown command. Try 'help' instead.");
             }
         }
+    }
+
+    private void gamePlay(String cmd, String[] tokens) throws Exception{
     }
 
     private String friendly(Exception e) {
