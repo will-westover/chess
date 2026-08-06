@@ -28,6 +28,7 @@ public class Repl implements ServerMessageObserver {
     private int currentGameID;
     private String playerColor;
     private ChessGame currentGame;
+    private final Scanner scanner = new Scanner(System.in);
 
     public Repl(int port){
         this.port = port;
@@ -49,7 +50,6 @@ public class Repl implements ServerMessageObserver {
 
     public void run() {
         System.out.println("Welcome to the CS 240 chess game. Type 'help' to get started.");
-        Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.print(authToken == null ? "\n [LOGGED OUT]>>> " : inGame ? "\n[GAME] >>> " : "\n[LOGGED IN] >>> ");
             String line = scanner.nextLine().trim();
@@ -214,7 +214,14 @@ public class Repl implements ServerMessageObserver {
                 ws.send(new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, currentGameID));
                 inGame = false;
             }
-            case "resign" -> {}
+            case "resign" -> {
+                System.out.println("Are you sure you want to resign? (yes/no)");
+                if(scanner.nextLine().trim().equalsIgnoreCase("yes")){
+                    ws.send(new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, currentGameID));
+                } else {
+                    System.out.println("Resignation was cancelled successfully");
+                }
+            }
             case "move" -> {
                 if(tokens.length < 3){
                     System.out.println("Usage: move <FROM> <TO> (ex: move e5 e4");
@@ -225,7 +232,13 @@ public class Repl implements ServerMessageObserver {
                             new ChessMove(start, end, null)));
                 }
             }
-            case "highlight" -> {}
+            case "highlight" -> {
+                if (tokens.length < 2){
+                    System.out.println("Usage: highlight <POS> (ex highlight e2");
+                } else {
+                    DrawBoard.highlight(currentGame, !"BLACK".equals(playerColor), parsePos(tokens[1]));
+                }
+            }
             default -> System.out.println("Unknown command. Try typing 'help'. ");
         }
     }

@@ -8,6 +8,9 @@ import static ui.EscapeSequences.*;
 
 public class DrawBoard {
     private static final String[][] PIECES = new String[8][8];
+    private static final String LIGHT_SQUARE = "\u001b[48;5;230m";
+    private static final String DARK_SQUARE = "\u001b[48;5;107m";
+
 
     static {
         String[] whitePieces = {
@@ -44,9 +47,10 @@ public class DrawBoard {
             for (int j = 0; j < 8; j++) {
                 int file = fileStart + j * fileStep;
                 boolean light = (rank + file) % 2 == 1;
-                String background = light ? SET_BG_COLOR_WHITE : SET_BG_COLOR_DARK_GREY;
+                String background = light ? LIGHT_SQUARE : DARK_SQUARE;
                 var piece = board.getPiece(new ChessPosition(rank, file));
-                System.out.print(background + glyph(piece) + RESET_BG_COLOR);
+                String foreground = piece == null ? "" : (piece.getTeamColor() == ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_WHITE : SET_TEXT_COLOR_BLACK);
+                System.out.print(background + foreground + glyph(piece) + RESET_TEXT_COLOR + RESET_BG_COLOR);
             }
             System.out.println(" " + rank + " ");
         }
@@ -74,5 +78,41 @@ public class DrawBoard {
             case ROOK -> white ? WHITE_ROOK : BLACK_ROOK;
             case PAWN -> white ? WHITE_PAWN : BLACK_PAWN;
         };
+    }
+
+    public static void highlight(ChessGame game, boolean whiteSide, ChessPosition source){
+        var board = game.getBoard();
+        var moves = game.validMoves(source);
+        java.util.Set<ChessPosition> targets = new java.util.HashSet<>();
+
+        if(moves != null){
+            for(var m : moves) targets.add(m.getEndPosition());
+        }
+
+        int rankStart = whiteSide ? 8 : 1;
+        int rankStep = whiteSide ? -1 : 1;
+        int fileStart = whiteSide ? 1 :8;
+        int fileStep = whiteSide ? 1 :-1;
+
+        printFiles(fileStart, fileStep);
+        for (int i = 0; i < 8; i++) {
+            int rank = rankStart + i * rankStep;
+            System.out.print(" " + rank + " ");
+            for (int j = 0; j < 8; j++) {
+                int file = fileStart + j * fileStep;
+                var pos = new ChessPosition(rank, file);
+                boolean light = (rank + file) % 2 == 1;
+                String background;
+                if(pos.equals(source)) background = SET_BG_COLOR_YELLOW;
+                else if (targets.contains(pos)) background = SET_BG_COLOR_GREEN;
+                else background = light ? LIGHT_SQUARE : DARK_SQUARE;
+                var piece = board.getPiece(pos);
+                String foreground = piece == null ? "" : (piece.getTeamColor() ==
+                        ChessGame.TeamColor.WHITE ? SET_TEXT_COLOR_WHITE : SET_TEXT_COLOR_BLACK);
+                System.out.print(background + foreground + glyph(piece) + RESET_TEXT_COLOR + RESET_BG_COLOR);
+            }
+            System.out.println(" " + rank + " ");
+        }
+        printFiles(fileStart, fileStep);
     }
 }
